@@ -40,3 +40,4 @@ Thumbs.db
 # Logs
 *.log
 consent_log.jsonl
+.agents/
