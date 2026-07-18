@@ -51,22 +51,32 @@ def search(question: str, top_k: int = 3, threshold: float = 1.0) -> list[dict]:
 
 
 def search_by_household_size(question: str) -> Optional[int]:
-    numbers = re.findall(r"\b(\d+)\b", question.lower())
-    for n in numbers:
-        val = int(n)
-        if 1 <= val <= 12:
-            return val
+    patterns = [
+        r"(\d+)[-\s]person\b",
+        r"(\d+)[-\s]household\b",
+        r"(\d+)[-\s]member\b",
+        r"family\s+of\s+(\d+)",
+        r"household\s+of\s+(\d+)",
+        r"member\s+of\s+(\d+)",
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, question.lower())
+        if match:
+            val = int(match.group(1))
+            if 1 <= val <= 12:
+                return val
     return None
 
 
 def search_by_cbsa(question: str) -> Optional[str]:
+    tokens = _tokenize(question)
     for region in corpus._data.get("regions", []):
         name = region["cbsa_name"].lower()
         counties = ", ".join(region["counties"]).lower()
         code = region["cbsa_code"]
-        for token in re.findall(r"[a-z0-9]+", question.lower()):
-            if token in name or token in counties:
-                return code
-            if re.search(rf"\b{re.escape(code)}\b", question):
+        if re.search(rf"\b{re.escape(code)}\b", question):
+            return code
+        for token in tokens:
+            if len(token) >= 3 and (token in name or token in counties):
                 return code
     return "default"

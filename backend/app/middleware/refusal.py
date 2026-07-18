@@ -5,7 +5,8 @@ from app.config import settings
 
 DECISION_VERBS = [
     "approve", "deny", "reject", "accept", "eligible", "ineligible",
-    "qualify", "disqualify", "admit", "decline", "grant", "refuse",
+    "eligibility", "qualify", "disqualify", "admit", "decline",
+    "grant", "refuse",
     "approved", "denied", "rejected", "accepted",
     "does not qualify", "entitled", "not entitled",
     "you qualify", "you do not qualify",

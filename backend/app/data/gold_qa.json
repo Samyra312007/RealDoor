@@ -1,0 +1,170 @@
+{
+  "meta": {
+    "corpus": "MTSP 2026",
+    "program": "LIHTC",
+    "description": "Gold-standard Q&A pairs for acceptance testing of the rules Q&A system",
+    "expected_behaviors": ["answer", "refuse", "abstain"]
+  },
+  "questions": [
+    {
+      "id": "qa-001",
+      "question": "What is the income limit for a 3-person household in Atlanta?",
+      "expected_behavior": "answer",
+      "expected_answer_contains": ["50% of AMI: $72,250", "Atlanta"],
+      "expected_citations": true,
+      "expected_abstained": false
+    },
+    {
+      "id": "qa-002",
+      "question": "What is the 30% AMI limit for a 1-person household in Chicago?",
+      "expected_behavior": "answer",
+      "expected_answer_contains": ["30% of AMI: $36,150", "Chicago", "1-person"],
+      "expected_citations": true,
+      "expected_abstained": false
+    },
+    {
+      "id": "qa-003",
+      "question": "Income limits for a family of 4 in Los Angeles",
+      "expected_behavior": "answer",
+      "expected_answer_contains": ["50% of AMI: $100,900", "Los Angeles", "4-person"],
+      "expected_citations": true,
+      "expected_abstained": false
+    },
+    {
+      "id": "qa-004",
+      "question": "What are the 60% AMI limits for a 2-person household in New York?",
+      "expected_behavior": "answer",
+      "expected_answer_contains": ["60% of AMI: $93,600", "New York", "2-person"],
+      "expected_citations": true,
+      "expected_abstained": false
+    },
+    {
+      "id": "qa-005",
+      "question": "Income threshold for Dallas 3-person household at 50% AMI",
+      "expected_behavior": "answer",
+      "expected_answer_contains": ["50% of AMI: $74,550", "Dallas", "3-person"],
+      "expected_citations": true,
+      "expected_abstained": false
+    },
+    {
+      "id": "qa-006",
+      "question": "Am I eligible for this program?",
+      "expected_behavior": "refuse",
+      "expected_answer_contains": ["cannot determine eligibility", "abstains"],
+      "expected_citations": false,
+      "expected_abstained": null
+    },
+    {
+      "id": "qa-007",
+      "question": "Will I qualify for low-income housing?",
+      "expected_behavior": "refuse",
+      "expected_answer_contains": ["cannot determine", "income limits"],
+      "expected_citations": true,
+      "expected_abstained": true
+    },
+    {
+      "id": "qa-008",
+      "question": "Tell me if my application will be approved",
+      "expected_behavior": "refuse",
+      "expected_answer_contains": ["cannot determine eligibility"],
+      "expected_citations": false,
+      "expected_abstained": null
+    },
+    {
+      "id": "qa-009",
+      "question": "What is the weather like today?",
+      "expected_behavior": "abstain",
+      "expected_answer_contains": ["don't have enough information"],
+      "expected_citations": false,
+      "expected_abstained": true
+    },
+    {
+      "id": "qa-010",
+      "question": "Explain how the Section 8 program works",
+      "expected_behavior": "answer",
+      "expected_answer_contains": ["MTSP", "income limit"],
+      "expected_citations": true,
+      "expected_abstained": false
+    },
+    {
+      "id": "qa-011",
+      "question": "Show me the 50% AMI limit for a 5-person household in Fulton County",
+      "expected_behavior": "answer",
+      "expected_answer_contains": ["50% of AMI: $86,700", "Atlanta", "5-person"],
+      "expected_citations": true,
+      "expected_abstained": false
+    },
+    {
+      "id": "qa-012",
+      "question": "What income limits apply to a 6-person household in Cook County?",
+      "expected_behavior": "answer",
+      "expected_answer_contains": ["50% of AMI: $99,800", "Chicago", "6-person"],
+      "expected_citations": true,
+      "expected_abstained": false
+    },
+    {
+      "id": "qa-013",
+      "question": "I want to know if I make too much for affordable housing",
+      "expected_behavior": "abstain",
+      "expected_answer_contains": ["don't have enough information"],
+      "expected_citations": false,
+      "expected_abstained": true
+    },
+    {
+      "id": "qa-014",
+      "question": "What counts as income for LIHTC purposes?",
+      "expected_behavior": "answer",
+      "expected_answer_contains": ["income", "limit"],
+      "expected_citations": true,
+      "expected_abstained": false
+    },
+    {
+      "id": "qa-015",
+      "question": "Can I get approved for a studio apartment?",
+      "expected_behavior": "refuse",
+      "expected_answer_contains": ["cannot determine eligibility", "income limits"],
+      "expected_citations": true,
+      "expected_abstained": true
+    },
+    {
+      "id": "qa-016",
+      "question": "Income limit for an 8-person household in Los Angeles",
+      "expected_behavior": "answer",
+      "expected_answer_contains": ["50% of AMI: $133,150", "Los Angeles", "8-person"],
+      "expected_citations": true,
+      "expected_abstained": false
+    },
+    {
+      "id": "qa-017",
+      "question": "What are the income limits for Orange County?",
+      "expected_behavior": "answer",
+      "expected_answer_contains": ["income limit", "Los Angeles"],
+      "expected_citations": true,
+      "expected_abstained": false
+    },
+    {
+      "id": "qa-018",
+      "question": "Income thresholds for senior housing eligibility",
+      "expected_behavior": "refuse",
+      "expected_answer_contains": ["cannot determine eligibility"],
+      "expected_citations": false,
+      "expected_abstained": null
+    },
+    {
+      "id": "qa-019",
+      "question": "Tell me about rental assistance programs",
+      "expected_behavior": "abstain",
+      "expected_answer_contains": ["don't have enough information"],
+      "expected_citations": false,
+      "expected_abstained": true
+    },
+    {
+      "id": "qa-020",
+      "question": "What is the maximum income to qualify for a 2-bedroom unit?",
+      "expected_behavior": "refuse",
+      "expected_answer_contains": ["cannot determine", "income limits"],
+      "expected_citations": true,
+      "expected_abstained": true
+    }
+  ]
+}
