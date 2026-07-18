@@ -1,8 +1,8 @@
-import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { usePrepare } from "@/hooks/usePrepare";
+import { AlertCircle, CheckCircle2, Clock, FileText, Download, Trash2 } from "lucide-react";
 
 export function PrepareStage({ token }: { token: string | null }) {
   const {
@@ -24,7 +24,7 @@ export function PrepareStage({ token }: { token: string | null }) {
 
   if (loading) {
     return (
-      <section aria-labelledby="prepare-heading" className="text-center py-12">
+      <section aria-labelledby="prepare-heading" className="py-12 text-center">
         <p className="text-neutral-500">Loading checklist...</p>
       </section>
     );
@@ -41,16 +41,29 @@ export function PrepareStage({ token }: { token: string | null }) {
       </p>
 
       {error && (
-        <div role="alert" className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-          {error}
+        <div role="alert" className="mb-4 flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
+          <span>{error}</span>
         </div>
       )}
 
-      <div className="mb-4 flex flex-wrap gap-3 text-sm text-neutral-600">
-        <Badge variant="success">{presentItems.length} present</Badge>
-        <Badge variant="warning">{missingItems.length} missing</Badge>
-        <Badge variant="error">{expiredItems.length} expired</Badge>
-        <Badge variant="info">{total} total</Badge>
+      <div className="mb-4 flex flex-wrap gap-3 text-sm text-neutral-600" role="status" aria-live="polite">
+        <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+          <CheckCircle2 className="h-3 w-3" aria-hidden="true" />
+          {presentItems.length} present
+        </span>
+        <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800">
+          <AlertCircle className="h-3 w-3" aria-hidden="true" />
+          {missingItems.length} missing
+        </span>
+        <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800">
+          <Clock className="h-3 w-3" aria-hidden="true" />
+          {expiredItems.length} expired
+        </span>
+        <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
+          <FileText className="h-3 w-3" aria-hidden="true" />
+          {total} total
+        </span>
       </div>
 
       {missingItems.length > 0 && (
@@ -66,17 +79,23 @@ export function PrepareStage({ token }: { token: string | null }) {
                     type="checkbox"
                     checked={toggledItems.has(item.item_name)}
                     onChange={() => toggleItem(item.item_name)}
-                    className="h-4 w-4 rounded border-neutral-300 text-brand-600 focus:ring-brand-500"
+                    className="h-4 w-4 rounded border-neutral-300 text-brand-600 focus:outline-2 focus:outline-offset-2 focus:outline-brand-500"
                     aria-label={`Include ${item.item_name}`}
                   />
                   <div>
                     <p className="text-sm font-medium text-neutral-900">{item.item_name}</p>
                     {item.notes && (
-                      <p className="text-xs text-amber-600">{item.notes}</p>
+                      <p className="flex items-center gap-1 text-xs text-amber-600">
+                        <AlertCircle className="h-3 w-3 shrink-0" aria-hidden="true" />
+                        <span>{item.notes}</span>
+                      </p>
                     )}
                   </div>
                 </div>
-                <Badge variant="warning">missing</Badge>
+                <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800">
+                  <AlertCircle className="h-3 w-3" aria-hidden="true" />
+                  missing
+                </span>
               </li>
             ))}
           </ul>
@@ -96,17 +115,23 @@ export function PrepareStage({ token }: { token: string | null }) {
                     type="checkbox"
                     checked={toggledItems.has(item.item_name)}
                     onChange={() => toggleItem(item.item_name)}
-                    className="h-4 w-4 rounded border-neutral-300 text-brand-600 focus:ring-brand-500"
+                    className="h-4 w-4 rounded border-neutral-300 text-brand-600 focus:outline-2 focus:outline-offset-2 focus:outline-brand-500"
                     aria-label={`Include ${item.item_name}`}
                   />
                   <div>
                     <p className="text-sm font-medium text-neutral-900">{item.item_name}</p>
                     {item.notes && (
-                      <p className="text-xs text-red-600">{item.notes}</p>
+                      <p className="flex items-center gap-1 text-xs text-red-600">
+                        <Clock className="h-3 w-3 shrink-0" aria-hidden="true" />
+                        <span>{item.notes}</span>
+                      </p>
                     )}
                   </div>
                 </div>
-                <Badge variant="error">expired</Badge>
+                <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800">
+                  <Clock className="h-3 w-3" aria-hidden="true" />
+                  expired
+                </span>
               </li>
             ))}
           </ul>
@@ -123,17 +148,23 @@ export function PrepareStage({ token }: { token: string | null }) {
                     type="checkbox"
                     checked={toggledItems.has(item.item_name)}
                     onChange={() => toggleItem(item.item_name)}
-                    className="h-4 w-4 rounded border-neutral-300 text-brand-600 focus:ring-brand-500"
+                    className="h-4 w-4 rounded border-neutral-300 text-brand-600 focus:outline-2 focus:outline-offset-2 focus:outline-brand-500"
                     aria-label={`Include ${item.item_name}`}
                   />
                   <div>
                     <p className="text-sm font-medium text-neutral-900">{item.item_name}</p>
                     {item.notes && (
-                      <p className="text-xs text-green-600">{item.notes}</p>
+                      <p className="flex items-center gap-1 text-xs text-green-600">
+                        <CheckCircle2 className="h-3 w-3 shrink-0" aria-hidden="true" />
+                        <span>{item.notes}</span>
+                      </p>
                     )}
                   </div>
                 </div>
-                <Badge variant="success">present</Badge>
+                <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                  <CheckCircle2 className="h-3 w-3" aria-hidden="true" />
+                  present
+                </span>
               </li>
             ))}
           </ul>
@@ -156,7 +187,7 @@ export function PrepareStage({ token }: { token: string | null }) {
           Assemble your confirmed fields and selected checklist items into a downloadable PDF.
         </p>
         <div className="flex flex-wrap gap-3">
-          <Button onClick={assemble} disabled={assembling}>
+          <Button onClick={assemble} disabled={assembling} aria-busy={assembling}>
             {assembling ? "Assembling..." : "Assemble Packet"}
           </Button>
           {packetResult && (
@@ -164,6 +195,7 @@ export function PrepareStage({ token }: { token: string | null }) {
               variant="primary"
               onClick={() => download(packetResult.packet_id)}
             >
+              <Download className="mr-1 h-4 w-4" aria-hidden="true" />
               Download PDF
             </Button>
           )}
@@ -172,6 +204,7 @@ export function PrepareStage({ token }: { token: string | null }) {
               variant="outline"
               onClick={() => setPacketResult(null)}
             >
+              <Trash2 className="mr-1 h-4 w-4" aria-hidden="true" />
               Clear
             </Button>
           )}
@@ -181,17 +214,20 @@ export function PrepareStage({ token }: { token: string | null }) {
           <div
             role="status"
             aria-live="polite"
-            className="mt-4 rounded-lg border border-green-200 bg-green-50 p-4"
+            className="mt-4 flex items-start gap-3 rounded-lg border border-green-200 bg-green-50 p-4"
           >
-            <p className="text-sm font-medium text-green-800">Packet ready</p>
-            <p className="mt-1 text-xs text-green-700">
-              Packet ID: {packetResult.packet_id} | Fields included:{" "}
-              {packetResult.fields_included}
-            </p>
-            <p className="mt-2 text-xs text-green-600">
-              This packet is for your records. It has NOT been transmitted
-              to any property or agency.
-            </p>
+            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-green-600" aria-hidden="true" />
+            <div>
+              <p className="text-sm font-medium text-green-800">Packet ready</p>
+              <p className="mt-1 text-xs text-green-700">
+                Packet ID: {packetResult.packet_id} | Fields included:{" "}
+                {packetResult.fields_included}
+              </p>
+              <p className="mt-2 text-xs text-green-600">
+                This packet is for your records. It has NOT been transmitted
+                to any property or agency.
+              </p>
+            </div>
           </div>
         )}
       </Card>

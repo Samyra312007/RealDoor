@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AlertCircle } from "lucide-react";
 import { Header } from "@/components/layout/header";
 import { Banner } from "@/components/layout/banner";
 import { StageNav } from "@/components/layout/stage-nav";
@@ -44,7 +45,7 @@ export function App() {
           <p className="mb-8 text-neutral-600">Application-Readiness Copilot</p>
           <Banner />
           <div className="mt-8">
-            <Button size="lg" onClick={createSession} disabled={sessionLoading}>
+            <Button size="lg" onClick={createSession} disabled={sessionLoading} aria-busy={sessionLoading}>
               {sessionLoading ? "Starting..." : "Start Your Journey"}
             </Button>
           </div>
@@ -109,8 +110,9 @@ export function App() {
             Previous
           </Button>
           {stage === 1 && fields.length > 0 && !allConfirmed && (
-            <p className="text-xs text-amber-600 self-center">
-              Confirm or skip all fields to proceed
+            <p className="flex items-center gap-1 self-center text-xs text-amber-600" role="status">
+              <AlertCircle className="h-3 w-3 shrink-0" aria-hidden="true" />
+              <span>Confirm or skip all fields to proceed</span>
             </p>
           )}
           <Button

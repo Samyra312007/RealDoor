@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
-import { Upload, FileText, CheckCircle2, AlertCircle, SkipForward } from "lucide-react";
+import { Upload, FileText, CheckCircle2, AlertCircle, SkipForward, Eye } from "lucide-react";
 
 type ExtractedField = {
   field_name: string;
@@ -69,6 +69,15 @@ export function ProfileStage({
   const [dragOver, setDragOver] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const [confirming, setConfirming] = useState<string | null>(null);
+  const statusRef = useRef<HTMLDivElement>(null);
+  const [announcement, setAnnouncement] = useState("");
+
+  useEffect(() => {
+    if (announcement) {
+      const timer = setTimeout(() => setAnnouncement(""), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [announcement]);
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -83,6 +92,16 @@ export function ProfileStage({
     const files = Array.from(e.target.files || []);
     files.forEach((f) => onUpload(f));
     if (fileRef.current) fileRef.current.value = "";
+  };
+
+  const handleConfirm = async (fieldName: string, correctedValue?: string) => {
+    await onConfirm(fieldName, correctedValue);
+    setAnnouncement(`${FIELD_LABELS[fieldName] || fieldName} confirmed`);
+  };
+
+  const handleSkip = async (fieldName: string) => {
+    await onSkip(fieldName);
+    setAnnouncement(`${FIELD_LABELS[fieldName] || fieldName} skipped`);
   };
 
   const sorted = [...fields].sort(
@@ -100,19 +119,25 @@ export function ProfileStage({
         Upload your documents. The AI extracts the information. You confirm or correct each field.
       </p>
 
+      <div ref={statusRef} aria-live="polite" className="sr-only">
+        {announcement}
+      </div>
+
       <Card title="Upload Documents" className="mb-6">
         <div
           role="button"
-          tabIndex={0}
+          tabIndex={loading ? -1 : 0}
           aria-label="Upload document area. Drag and drop or click to select."
+          aria-disabled={loading}
           className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 transition-colors
+            ${loading ? "opacity-50 pointer-events-none" : ""}
             ${dragOver ? "border-brand-500 bg-brand-50" : "border-neutral-300 hover:border-brand-400"}
           `}
           onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
           onDragLeave={() => setDragOver(false)}
           onDrop={handleDrop}
-          onClick={() => fileRef.current?.click()}
-          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") fileRef.current?.click(); }}
+          onClick={() => !loading && fileRef.current?.click()}
+          onKeyDown={(e) => { if (!loading && (e.key === "Enter" || e.key === " ")) fileRef.current?.click(); }}
         >
           <input
             ref={fileRef}
@@ -122,10 +147,11 @@ export function ProfileStage({
             className="hidden"
             onChange={handleFileSelect}
             aria-hidden="true"
+            disabled={loading}
           />
           <Upload className="mb-2 h-8 w-8 text-neutral-400" aria-hidden="true" />
           <p className="text-sm font-medium text-neutral-700">
-            Drag & drop documents, or click to browse
+            {loading ? "Upload in progress..." : "Drag & drop documents, or click to browse"}
           </p>
           <p className="mt-1 text-xs text-neutral-500">PDF, PNG, or JPEG (max 10 MB each)</p>
         </div>
@@ -140,11 +166,15 @@ export function ProfileStage({
                   <span className="text-xs text-brand-600">Extracting...</span>
                 )}
                 {u.status === "done" && (
-                  <CheckCircle2 className="h-4 w-4 text-green-500" aria-label="Uploaded" />
+                  <span className="flex items-center gap-1 text-xs text-green-600">
+                    <CheckCircle2 className="h-3 w-3" aria-hidden="true" />
+                    <span>Uploaded</span>
+                  </span>
                 )}
                 {u.status === "error" && (
-                  <span className="flex items-center gap-1 text-xs text-red-600">
-                    <AlertCircle className="h-3 w-3" /> {u.error || "Failed"}
+                  <span className="flex items-center gap-1 text-xs text-red-600" role="alert">
+                    <AlertCircle className="h-3 w-3" aria-hidden="true" />
+                    <span>{u.error || "Failed"}</span>
                   </span>
                 )}
               </li>
@@ -161,8 +191,9 @@ export function ProfileStage({
       )}
 
       {error && (
-        <div role="alert" className="mb-4 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-800">
-          {error}
+        <div role="alert" className="mb-4 flex items-center gap-2 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+          <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
+          <span>{error}</span>
         </div>
       )}
 
@@ -180,10 +211,13 @@ export function ProfileStage({
             <div
               ref={needsReviewRef}
               role="alert"
-              className="mb-4 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800"
+              className="mb-4 flex items-center gap-2 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800"
             >
-              <span className="font-medium">{needsReview.length} field(s)</span> need your review.
-              Please confirm or correct the highlighted fields below.
+              <Eye className="h-4 w-4 shrink-0" aria-hidden="true" />
+              <span>
+                <span className="font-medium">{needsReview.length} field(s)</span> need your review.
+                Please confirm or correct the highlighted fields below.
+              </span>
             </div>
           )}
 
@@ -220,24 +254,32 @@ export function ProfileStage({
                             label="Corrected value"
                             onKeyDown={(e) => {
                               if (e.key === "Enter") {
-                                onConfirm(field.field_name, (e.target as HTMLInputElement).value);
+                                handleConfirm(field.field_name, (e.target as HTMLInputElement).value);
+                                setConfirming(null);
+                              }
+                              if (e.key === "Escape") {
                                 setConfirming(null);
                               }
                             }}
                           />
-                          <Button size="sm" variant="primary" onClick={() => { setConfirming(null); onConfirm(field.field_name, (document.getElementById(`edit-${field.field_name}`) as HTMLInputElement)?.value); }}>
+                          <Button size="sm" variant="primary" onClick={() => { handleConfirm(field.field_name, (document.getElementById(`edit-${field.field_name}`) as HTMLInputElement)?.value); setConfirming(null); }}>
                             Save
                           </Button>
                         </div>
                       ) : (
-                        <p className={`mt-1 text-sm ${field.value ? "text-neutral-700" : "italic text-neutral-400"}`}>
-                          {field.value || "Needs your input — not found in document"}
+                        <p className={`mt-1 flex items-center gap-1 text-sm ${field.value ? "text-neutral-700" : "italic text-neutral-400"}`}>
+                          {field.value || (
+                            <>
+                              <AlertCircle className="h-3 w-3" aria-hidden="true" />
+                              <span>Needs your input — not found in document</span>
+                            </>
+                          )}
                         </p>
                       )}
 
                       {field.source_snippet && (
                         <details className="mt-1">
-                          <summary className="cursor-pointer text-xs text-neutral-500 hover:text-neutral-700">
+                          <summary className="cursor-pointer text-xs text-neutral-500 hover:text-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 rounded">
                             View source snippet
                           </summary>
                           <p className="mt-1 rounded bg-neutral-50 p-2 text-xs text-neutral-600 font-mono whitespace-pre-wrap">
@@ -253,7 +295,7 @@ export function ProfileStage({
                           <Button
                             size="sm"
                             variant="primary"
-                            onClick={() => onConfirm(field.field_name)}
+                            onClick={() => handleConfirm(field.field_name)}
                           >
                             Confirm
                           </Button>
@@ -268,14 +310,17 @@ export function ProfileStage({
                           <Button
                             size="sm"
                             variant="ghost"
-                            onClick={() => onSkip(field.field_name)}
+                            onClick={() => handleSkip(field.field_name)}
                             aria-label={`Skip ${field.field_name}`}
                           >
                             <SkipForward className="h-3 w-3" aria-hidden="true" />
                           </Button>
                         </>
                       ) : (
-                        <Badge variant="success">Confirmed</Badge>
+                        <span className="flex items-center gap-1">
+                          <CheckCircle2 className="h-3 w-3 text-green-600" aria-hidden="true" />
+                          <Badge variant="success">Confirmed</Badge>
+                        </span>
                       )}
                     </div>
                   </div>

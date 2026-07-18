@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { AlertCircle } from "lucide-react";
 
 export function UnderstandStage({
   sessionToken,
@@ -64,14 +65,17 @@ export function UnderstandStage({
             </Button>
 
             {answer && (
-              <div role="region" aria-label="Answer" className="mt-4 space-y-3 rounded-lg border bg-neutral-50 p-4">
+              <div role="region" aria-label="Answer" aria-live="polite" className="mt-4 space-y-3 rounded-lg border bg-neutral-50 p-4">
                 <p className="text-sm text-neutral-800">{answer.answer}</p>
                 {answer.abstained && (
-                  <Badge variant="warning">Abstained — no decision made</Badge>
+                  <span className="flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3 text-amber-600" aria-hidden="true" />
+                    <Badge variant="warning">Abstained — no decision made</Badge>
+                  </span>
                 )}
                 {answer.citations?.length > 0 && (
                   <details>
-                    <summary className="cursor-pointer text-xs text-neutral-500">
+                    <summary className="cursor-pointer rounded text-xs text-neutral-500 hover:text-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500">
                       Sources ({answer.citations.length})
                     </summary>
                     <ul className="mt-2 space-y-1">
@@ -97,11 +101,12 @@ export function UnderstandStage({
               disabled={calcLoading}
               className="w-full"
               variant="primary"
+              aria-busy={calcLoading}
             >
               {calcLoading ? "Calculating from profile..." : "Calculate from Confirmed Profile"}
             </Button>
 
-            <div className="relative my-4">
+            <div className="relative my-4" role="separator" aria-orientation="horizontal">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t border-neutral-300" />
               </div>
@@ -133,12 +138,13 @@ export function UnderstandStage({
             <Button
               onClick={() => onCalculate(Number(income), Number(hhSize), county)}
               disabled={!income || !hhSize || calcLoading}
+              aria-busy={calcLoading}
             >
               {calcLoading ? "Calculating..." : "Calculate"}
             </Button>
 
             {calcResult && (
-              <div role="region" aria-label="Calculation result" className="mt-4 space-y-3 rounded-lg border bg-neutral-50 p-4">
+              <div role="region" aria-label="Calculation result" aria-live="polite" className="mt-4 space-y-3 rounded-lg border bg-neutral-50 p-4">
                 <div className="space-y-2">
                   <p className="text-sm font-medium">Calculation Trace</p>
                   {calcResult.formula_steps?.slice(0, 6).map((step: string, i: number) => (
@@ -152,8 +158,9 @@ export function UnderstandStage({
                       size="sm"
                       onClick={onExplainCalculation}
                       disabled={explaining}
+                      aria-busy={explaining}
                     >
-                      {explaining ? "Loading..." : "Explain this calculation"}
+                      {explaining ? "Loading explanation..." : "Explain this calculation"}
                     </Button>
                   )}
                 </div>
@@ -165,15 +172,15 @@ export function UnderstandStage({
                 {calcResult.income_limit_50 && (
                   <div className="mt-3 grid grid-cols-3 gap-2">
                     <div>
-                      <p className="text-2xs text-neutral-500">30% Limit</p>
+                      <p className="text-xs text-neutral-500">30% Limit</p>
                       <p className="text-sm font-medium">${calcResult.income_limit_30?.toLocaleString()}</p>
                     </div>
                     <div>
-                      <p className="text-2xs text-neutral-500">50% Limit</p>
+                      <p className="text-xs text-neutral-500">50% Limit</p>
                       <p className="text-sm font-medium">${calcResult.income_limit_50?.toLocaleString()}</p>
                     </div>
                     <div>
-                      <p className="text-2xs text-neutral-500">60% Limit</p>
+                      <p className="text-xs text-neutral-500">60% Limit</p>
                       <p className="text-sm font-medium">${calcResult.income_limit_60?.toLocaleString()}</p>
                     </div>
                   </div>
