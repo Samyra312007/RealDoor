@@ -12,9 +12,6 @@ class Settings(BaseSettings):
     MAX_UPLOAD_SIZE_MB: int = 10
     ALLOWED_DOCUMENT_TYPES: list[str] = ["application/pdf", "image/png", "image/jpeg"]
     CORS_ORIGINS: list[str] = ["http://localhost:5173", "http://localhost:3000"]
-    GUARDRAIL_REFUSAL_ACTIVE: bool = True
-    GUARDRAIL_INJECTION_ACTIVE: bool = True
-    GUARDRAIL_CONSENT_LOG_ACTIVE: bool = True
 
 
 settings = Settings()

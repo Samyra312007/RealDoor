@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Response
 from app.config import settings
 from app.schemas.allowlist import SessionInfo
 from app.guardrails.session_store import session_store
@@ -29,18 +29,30 @@ def get_session_info(token: str):
     )
 
 
-@router.delete("/delete", response_model=dict)
+@router.get("/profile", response_model=dict)
+def get_session_profile(token: str):
+    session = session_store.get_session(token)
+    if session is None:
+        raise HTTPException(status_code=404, detail="Session not found or expired")
+    profile = session_store.get_decrypted_profile(token)
+    if profile is None:
+        raise HTTPException(status_code=404, detail="No profile found")
+    profile.pop("session_token", None)
+    return {"session_token": token[:16] + "...", "profile": profile}
+
+
+@router.delete("/delete")
 def delete_session(token: str):
     if not session_store.delete_session(token):
         raise HTTPException(status_code=404, detail="Session not found")
-    return {"message": "Session deleted. All data purged."}
+    return Response(status_code=200)
 
 
-@router.delete("/{token}", response_model=dict)
+@router.delete("/{token}")
 def delete_session_by_id(token: str):
     if not session_store.delete_session(token):
         raise HTTPException(status_code=404, detail="Session not found")
-    return {"message": "Session deleted. All data purged."}
+    return Response(status_code=200)
 
 
 @router.get("/{token}/log", response_model=dict)

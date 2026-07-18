@@ -1,6 +1,7 @@
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 from app.guardrails.session_store import session_store
+from app.guardrails.session_store import MTSP_RULE_VERSION
 
 
 class ConsentLoggerMiddleware(BaseHTTPMiddleware):
@@ -10,5 +11,5 @@ class ConsentLoggerMiddleware(BaseHTTPMiddleware):
             session_token = request.headers.get("x-session-token", "") or request.query_params.get("token", "")
             if session_token:
                 action_type = f"{request.method} {request.url.path}"
-                session_store.log_action(session_token, action_type)
+                session_store.log_action(session_token, action_type, "route")
         return response

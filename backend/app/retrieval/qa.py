@@ -45,8 +45,7 @@ def answer_question(question: str) -> RuleAnswer:
         answer += "\n\nFor a more precise answer, please specify your household size and county."
     else:
         return RuleAnswer(
-            answer="I don't have enough information to answer that. "
-                   "Try asking about income limits for a specific household size and area.",
+            answer="I don't have enough information to answer that.",
             citations=[],
             abstained=True,
         )

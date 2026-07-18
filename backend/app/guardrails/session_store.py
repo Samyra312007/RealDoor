@@ -1,4 +1,4 @@
-import secrets
+import uuid
 import time
 from threading import Lock
 from app.services.encryption import (
@@ -17,7 +17,7 @@ class SessionStore:
         self._lock = Lock()
 
     def create_session(self) -> str:
-        token = secrets.token_urlsafe(32)
+        token = str(uuid.uuid4())
         with self._lock:
             self._sessions[token] = {
                 "created_at": time.time(),

@@ -1,12 +1,23 @@
 from fastapi import APIRouter, HTTPException, UploadFile, File, Depends
-from app.schemas.allowlist import ExtractionResult, ExtractedField
+from app.schemas.allowlist import ExtractionResult, ExtractedField, RenterProfile
 from app.guardrails.injection_defense import InjectionDefense
 from app.guardrails.session_store import session_store
 from app.extraction.extractor import process_document
 from app.config import settings
 import hashlib
 
+ALLOWLIST_FIELDS = {
+    "full_name", "household_size", "annual_income", "monthly_income",
+    "income_source", "has_voucher", "voucher_type", "current_address",
+    "has_government_id", "is_veteran", "is_senior", "has_disability",
+    "property_county", "property_cbsa",
+}
+
 router = APIRouter(prefix="/extract", tags=["extract"])
+
+
+def _filter_allowlist(fields: list[ExtractedField]) -> list[ExtractedField]:
+    return [f for f in fields if f.field_name in ALLOWLIST_FIELDS]
 
 
 @router.post("/", response_model=ExtractionResult)
@@ -34,17 +45,12 @@ async def extract_document(
 
     scan = injection_defense.scan_document_text(raw_text)
     if scan["is_suspicious"]:
-        session_store.log_action(session_token, "injection_attempt_blocked", "document_text")
-        raise HTTPException(
-            status_code=422,
-            detail={
-                "error": "suspicious_document_content",
-                "message": "Document contains content that may attempt to override system instructions.",
-                "findings": scan["findings"],
-            },
-        )
+        session_store.log_action(session_token, "injection_attempt_sanitized", "document_text")
+        raw_text = injection_defense.sanitize_for_model(raw_text)
+        contents = raw_text.encode("latin-1", errors="replace")
 
     result = process_document(contents, file.filename or "document.pdf")
+    result.fields = _filter_allowlist(result.fields)
 
     text_hash = hashlib.sha256(raw_text.encode()).hexdigest()
     result.raw_text_hash = text_hash

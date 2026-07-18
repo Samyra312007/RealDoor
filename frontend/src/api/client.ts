@@ -19,6 +19,9 @@ export const api = {
   getSessionInfo: (token: string) =>
     request<any>(`/session/info?token=${encodeURIComponent(token)}`),
 
+  getSessionProfile: (token: string) =>
+    request<{ session_token: string; profile: Record<string, any> }>(`/session/profile?token=${encodeURIComponent(token)}`),
+
   deleteSession: (token: string) =>
     request<{ message: string }>(`/session/delete?token=${encodeURIComponent(token)}`, { method: "DELETE" }),
 

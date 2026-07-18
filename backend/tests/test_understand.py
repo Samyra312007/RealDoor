@@ -30,8 +30,7 @@ def test_rules_ask_refusal():
         "/rules/ask",
         json={"question": "Am I eligible for section 8?"},
     )
-    # RefusalMiddleware blocks decision verbs before the router, returning 422
-    assert resp.status_code == 422
+    assert resp.status_code == 400
 
 
 def test_rules_ask_abstention():

@@ -35,4 +35,7 @@ class InjectionDefense:
 
     @staticmethod
     def sanitize_for_model(text: str) -> str:
-        return text[:10000]
+        sanitized = text
+        for pattern in INJECTION_PATTERNS:
+            sanitized = re.sub(pattern, "[redacted]", sanitized, flags=re.IGNORECASE)
+        return sanitized[:10000]

@@ -1,6 +1,7 @@
 from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
+from app.config import settings
 
 DECISION_VERBS = [
     "approve", "deny", "reject", "accept", "eligible", "ineligible",
@@ -13,6 +14,12 @@ DECISION_VERBS = [
 ]
 
 SKIP_CONTENT_TYPES = ["multipart/form-data", "application/octet-stream"]
+
+REFUSAL_MESSAGE = (
+    "I can extract, explain rules, and calculate — "
+    "but I cannot determine eligibility. "
+    "Please confirm your profile and consult a qualified human."
+)
 
 
 class RefusalMiddleware(BaseHTTPMiddleware):
@@ -27,15 +34,10 @@ class RefusalMiddleware(BaseHTTPMiddleware):
                         for verb in DECISION_VERBS:
                             if verb in body_text:
                                 return JSONResponse(
-                                    status_code=422,
+                                    status_code=400,
                                     content={
                                         "error": "refusal",
-                                        "message": (
-                                            "RealDoor does not make eligibility decisions. "
-                                            "The AI extracts, explains, retrieves, "
-                                            "calculates, and prepares. The renter confirms. "
-                                            "A qualified human decides."
-                                        ),
+                                        "message": REFUSAL_MESSAGE,
                                         "triggered_by": verb,
                                         "refusal_category": "decision_verb_detected",
                                     },
