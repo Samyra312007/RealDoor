@@ -1,0 +1,24 @@
+property_name,address,cbsa_code,total_units,low_income_units,bedroom_studio,bedroom_1br,bedroom_2br,bedroom_3br,year_placed_in_service
+Oakwood Manor,123 Oak Street NW Atlanta GA 30303,12086,120,96,8,40,48,24,2018
+Pine Ridge Apartments,456 Pine Road Decatur GA 30030,12086,84,72,4,28,36,16,2020
+Sunset Terrace,789 Sunset Blvd Smyrna GA 30082,12086,150,120,10,50,60,30,2015
+Heritage Court,234 Heritage Lane Marietta GA 30060,12086,96,80,6,30,40,20,2021
+Maplewood Village,567 Maple Avenue Atlanta GA 30308,12086,200,160,16,68,80,36,2019
+Lakeview Crossing,890 Lakeview Drive Duluth GA 30097,12086,72,60,4,22,30,16,2022
+Lakeside Terrace,111 Lakeshore Drive Chicago IL 60601,16980,180,144,12,56,72,40,2017
+Prairie Pointe,222 Prairie Avenue Naperville IL 60540,16980,96,80,6,30,40,20,2020
+Willow Creek,333 Willow Road Elgin IL 60120,16980,132,108,8,42,54,28,2019
+Harbor View,444 Harbor Street Chicago IL 60614,16980,160,128,10,50,64,36,2016
+Oak Brook Estates,555 Oak Brook Ln Oak Park IL 60302,16980,60,48,4,20,24,12,2021
+Pacific Heights,666 Pacific Avenue Los Angeles CA 90012,31080,200,160,16,66,80,38,2015
+Sunrise Gardens,777 Sunrise Blvd Anaheim CA 92801,31080,140,112,10,44,56,30,2019
+Cypress Court,888 Cypress Street Long Beach CA 90802,31080,108,90,6,34,44,24,2021
+Valley Vista,999 Valley Blvd Los Angeles CA 90017,31080,220,176,18,72,88,42,2017
+Metro Gardens,111 Metro Ave New York NY 10001,35620,240,192,20,80,96,44,2016
+Liberty Place,222 Liberty Street Newark NJ 07102,35620,150,120,12,48,60,30,2020
+Garden State Court,333 Garden Pkwy Jersey City NJ 07302,35620,130,104,10,42,52,26,2021
+Empire Terrace,444 Empire Blvd New York NY 10013,35620,180,144,14,58,72,36,2018
+Lone Star Village,111 Lone Star Dr Dallas TX 75201,19100,160,128,12,52,64,32,2019
+Trinity Crossing,222 Trinity Mills Rd Dallas TX 75287,19100,120,96,8,38,48,26,2020
+Pioneer Park,333 Pioneer Pkwy Arlington TX 76010,19100,90,72,6,28,36,20,2022
+Meadow Creek,444 Meadow Creek Dr Plano TX 75023,19100,140,112,10,44,56,30,2018

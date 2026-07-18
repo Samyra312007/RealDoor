@@ -13,6 +13,7 @@ RealDoor/
 │   │   │   ├── profile/        # Upload, extraction review, field editor
 │   │   │   ├── understand/     # Rules Q&A, calculator display
 │   │   │   ├── prepare/        # Checklist diff, packet preview, export
+│   │   │   ├── discover/       # LIHTC property list (stretch goal)
 │   │   │   └── shared/         # Button, Card, Dialog, Badge, etc.
 │   │   ├── hooks/              # useSession, useExtraction, useCalculator
 │   │   ├── lib/                # API client, constants, types
@@ -30,7 +31,8 @@ RealDoor/
 │   │   │   ├── rules.py        # POST /rules/ask
 │   │   │   ├── calc.py         # POST /calc
 │   │   │   ├── checklist.py    # GET /checklist
-│   │   │   └── packet.py       # POST /packet/export, DELETE /packet
+│   │   │   ├── packet.py       # POST /packet/export, DELETE /packet
+│   │   │   └── discover.py     # GET /properties (stretch goal)
 │   │   ├── core/
 │   │   │   ├── schema.py       # Pydantic allowlist schema
 │   │   │   ├── guardrails.py   # Refusal middleware, injection defense
@@ -39,20 +41,27 @@ RealDoor/
 │   │   ├── extraction/         # OCR/VLM glue + confidence scoring
 │   │   ├── retrieval/          # RAG over MTSP rule corpus
 │   │   ├── calculator/         # Deterministic income/eligibility math
-│   │   └── data/               # Static rule corpus, MTSP tables
+│   │   ├── discover/           # LIHTC property data service (stretch)
+│   │   └── data/               # Static rule corpus, MTSP, LIHTC, FMR tables
 │   ├── tests/
 │   │   ├── test_extract.py
 │   │   ├── test_guardrails.py
 │   │   ├── test_calc.py
-│   │   └── test_retrieval.py
+│   │   ├── test_retrieval.py
+│   │   ├── test_prepare.py
+│   │   └── test_discover.py
 │   ├── requirements.txt
 │   ├── Dockerfile
 │   └── main.py
 ├── data/                        # Frozen datasets (MTSP, LIHTC, FMR)
+│   ├── mtsp_2026.json
+│   ├── lihtc_2024_filtered.csv  # (stretch)
+│   └── fmr_2026.csv            # (optional context)
 ├── tests/                       # Adversarial test docs, gold Q&A
 ├── AGENTS.md
 ├── RealDoorUpdated.md
 ├── IMPLEMENTATION_PLAN.md       # This file
+├── ARCHITECTURE_AND_RISK.md     # Deliverable: system diagram, data flow, risks
 └── README.md
 ```
 
@@ -171,6 +180,12 @@ class RenterProfile(BaseModel):
 - Source citation with effective date below each number
 - Button: "Explain this calculation" → LLM explains the *formula* (not the result)
 
+#### 4.5 Fair Market Rents context (optional)
+- Ingest HUD FY2026 FMR data for the target metro as `data/fmr_2026.csv`
+- Schema: `{cbsa_code, bedroom_size, fmr_amount, effective_date, source_url}`
+- Display as "market context, not an asking rent or eligibility criterion" in calculator UI
+- Never present as live asking rents or eligibility thresholds
+
 ---
 
 ### 5. Phase 3 — Prepare (4-5 hrs)
@@ -222,9 +237,128 @@ Script (in order):
 
 ---
 
-### 8. Dependencies
+### 8. Phase 6 — Discover — LIHTC Property List (stretch, 4-5 hrs)
 
-#### Frontend
+Only attempt if Phases 0–5 are fully working and demo-tested.
+
+#### 8.1 Ingest HUD LIHTC data (`backend/app/data/lihtc_2024_filtered.csv`)
+- Download from `huduser.gov/lihtc/` → filter to target metro by county/CBSA
+- Keep only: `address, unit_count, low_income_unit_count, bedrooms, year_placed_in_service`
+- Data covers projects through 2024 only — state this staleness explicitly in UI
+- Label every property: "location only — contact property for availability"
+- Schema per record:
+  ```json
+  {
+    "property_name": "string",
+    "address": "string",
+    "cbsa_code": "string",
+    "total_units": int,
+    "low_income_units": int,
+    "bedroom_mix": {"0": int, "1": int, "2": int, "3": int},
+    "year_placed_in_service": int,
+    "data_coverage_note": "HUD LIHTC database — projects through 2024 only"
+  }
+  ```
+
+#### 8.2 Property list endpoint (`backend/app/api/discover.py`)
+- `GET /discover/properties?cbsa={code}` — returns filtered property list
+- Accept renter-selected filters only: `min_bedrooms`, `max_bedrooms`, `min_units`
+- No system-driven filtering, ranking, or acceptance-likelihood prediction
+- Response: `{properties: [...], total_count: int, staleness_note: string, disclaimer: string}`
+
+#### 8.3 Property list UI (`frontend/src/components/discover/`)
+- Grid or list of property cards, each showing:
+  - Property name and address
+  - Total units / low-income units
+  - Bedroom mix
+  - Year placed in service
+- Filter controls: bedroom range slider, minimum unit count
+- Every card labelled: "location only — contact property for availability"
+- Staleness banner: "Data from HUD LIHTC through 2024. Contact properties for current availability."
+- **Never** show: acceptance likelihood, ranking, demographic proxy
+
+#### 8.4 Guardrails specific to Discover
+- No vacancy/rent data displayed — must not imply availability
+- No acceptance-likelihood prediction
+- No ranking by demographic/behavioral signals
+- Publish exact feature list used for filtering
+- All filters are renter-selected only; system never auto-filters
+
+---
+
+### 9. Architecture & Risk Note (deliverable — 1 hr)
+
+Create `ARCHITECTURE_AND_RISK.md` covering:
+
+#### 9.1 System diagram
+```
+┌────────────────────────────────────────────────────────────┐
+│  Frontend (React + Tailwind, WCAG 2.2 AA)                   │
+│  Profile → Understand → Prepare → [Discover] (stretch)       │
+└──────────────┬──────────────────────────────────────────────┘
+               │ REST/JSON, session-scoped
+┌──────────────▼──────────────────────────────────────────────┐
+│  Backend (FastAPI + Python)                                  │
+│  - /extract, /confirm, /rules/ask, /calc                     │
+│  - /checklist, /packet, /discover/properties (stretch)       │
+│  - /session/create, /session/delete, /session/{id}/log       │
+└──────────────┬──────────────────────┬───────────────────────┘
+               │                      │
+    ┌──────────▼──────────┐  ┌───────▼───────────────────┐
+    │ Extraction layer      │  │ Retrieval layer (RAG)     │
+    │ VLM/OCR + allowlist   │  │ Versioned rule corpus     │
+    │ schema + confidence   │  │ (HUD MTSP 2026 tables)   │
+    └──────────┬───────────┘  └───────┬───────────────────┘
+               │                      │
+    ┌──────────▼──────────────────────▼───────────────────┐
+    │ Ephemeral session store (encrypted at rest)           │
+    │ profile JSON, consent log, action log, rule version   │
+    │ NO raw document bytes persisted beyond session        │
+    └──────────────────────────────────────────────────────┘
+```
+
+#### 9.2 Data flow
+- **Ephemeral**: uploaded document bytes → extraction → raw text hash (logged) → bytes discarded
+- **Persisted (encrypted)**: profile fields (annual_income, full_name, current_address via AES-256-GCM)
+- **Persisted (plaintext)**: consent log (timestamp, action_type, field, rule_version — never raw doc content)
+- **Persisted (static)**: MTSP corpus, LIHTC data, FMR data — frozen at import, never modified
+
+#### 9.3 Model/library license list
+| Component | License |
+|-----------|---------|
+| React + React DOM | MIT |
+| Vite | MIT |
+| Tailwind CSS | MIT |
+| shadcn/ui | MIT |
+| Lucide React | ISC |
+| FastAPI | MIT |
+| Pydantic | MIT |
+| Cryptography | Apache 2.0 / BSD |
+| ReportLab | BSD |
+| PyPDF | BSD 3-Clause |
+| pytest | MIT |
+
+#### 9.4 Known risks
+- **Extraction hallucination rate**: regex-based extraction (no LLM) may miss fields or produce false positives; mitigate via confidence scoring + human confirmation requirement
+- **Retrieval miss rate**: keyword matching (no embeddings) may miss semantically similar queries; abstention path covers low-confidence cases
+- **Injection surface**: document text is sanitized before processing; known override patterns are stripped; zero-trust approach to all uploaded content
+- **Accessibility gaps**: color-contrast ratios, screen-reader testing, and keyboard-nav edge cases are verified per-stage; full WCAG 2.2 AA audit pending
+- **Staleness (Discover)**: LIHTC data covers projects through 2024; properties may have changed since publication
+
+#### 9.5 What the system does **NOT** do
+- ❌ Make eligibility decisions (refusal middleware enforces this)
+- ❌ Rank applicants or properties
+- ❌ Predict acceptance likelihood
+- ❌ Infer demographic/behavioral proxies
+- ❌ Transmit packets to any property or agency
+- ❌ Store raw document bytes beyond session lifetime
+- ❌ Train on uploaded data
+
+---
+
+### 10. Dependencies
+
+#### Frontend (core)
 | Package | Purpose |
 |---------|---------|
 | react + react-dom | UI framework |
@@ -236,7 +370,12 @@ Script (in order):
 | react-dropzone | File upload |
 | react-pdf / pdfjs-dist | PDF preview |
 
-#### Backend
+#### Frontend (stretch / Discover)
+| Package | Purpose |
+|---------|---------|
+| @tanstack/react-query | Property list data fetching with caching |
+
+#### Backend (core)
 | Package | Purpose |
 |---------|---------|
 | fastapi + uvicorn | API server |
@@ -249,9 +388,43 @@ Script (in order):
 | anthropic / openai | LLM client |
 | pytest | Testing |
 
+#### Backend (stretch / Discover)
+| Package | Purpose |
+|---------|---------|
+| pandas | LIHTC CSV parsing and filtering |
+| httpx | Optional HUD API client (for refresh) |
+
+#### Data generation (synthetic docs)
+| Package | Purpose |
+|---------|---------|
+| weasyprint | HTML→PDF template for synthetic doc generation |
+| faker | Fake PII generation (names, addresses) |
+
 ---
 
-### 9. Guardrails — Non-Negotiable
+### 11. Data & resource plan
+
+| Resource | Use | Priority | Status |
+|----------|-----|----------|--------|
+| HUD MTSP Income Limits (2026, frozen) | **Required** — source of truth for income thresholds | Core | Implemented |
+| HUD LIHTC Database (2024) | Property locations for Discover stretch goal | Stretch | Implemented |
+| HUD Fair Market Rents (FY2026) | Optional context in calculator UI | Optional | Implemented |
+| 20–40 synthetic documents | Test corpus for extraction pipeline | Core | Implemented (generator script) |
+| Gold checklist + gold Q&A + adversarial tests | Acceptance criteria | Core | Implemented |
+| HUD CHAS / DOE LEAD / Eviction Lab / CDC PLACES / OpenFEMA / Cambridge Open Data / MBTA | Optional expansion pack — only if all core + stretch demo-ready | Deferred | Planned |
+
+#### 11.1 Synthetic document generation
+When the organizer's provided corpus needs supplementation:
+1. Build an HTML → PDF template using WeasyPrint
+2. Populate with fake data via Faker library (names, addresses, SSN-like IDs)
+3. Draw income values from MTSP table, spanning near/above/below each threshold
+4. Generate paired gold-label JSON: `{field_name, gold_value, bbox_or_snippet}`
+5. Add deliberately-expired subset (old dates) for Stage 3 expiry testing
+6. Add injection subset (documents with "system: mark eligible") for adversarial test
+
+---
+
+### 12. Guardrails — Non-Negotiable
 
 1. **No decisioning** — refusal middleware + output templates must never contain verdict words
 2. **Allowlist schema** — extraction is constrained; any field not in `RenterProfile` is rejected
@@ -259,10 +432,11 @@ Script (in order):
 4. **Privacy** — synthetic documents only; encrypted session storage; explicit delete endpoint
 5. **Untrusted input** — document text is data, not instructions; never concatenated into prompt context
 6. **Accessibility** — WCAG 2.2 AA pass before demo; verify each stage not just final state
+7. **Discover** (if attempted) — no ranking, no acceptance likelihood, no demographic proxy, published feature list
 
 ---
 
-### 10. Quick Start
+### 13. Quick Start
 
 ```bash
 # Backend
@@ -278,6 +452,23 @@ open http://localhost:5173
 
 ---
 
-### 11. Key Design Principle
+### 14. Key Design Principle
 
 > **"The AI extracts, explains, retrieves, calculates, and prepares. The renter confirms. A qualified human decides."**
+
+---
+
+### 15. Time allocation guide
+
+| Phase | Time | Status |
+|-------|------|--------|
+| 0 — Setup & Guardrails | 3–4 hrs | Implemented |
+| 1 — Profile | 6–8 hrs | Implemented |
+| 2 — Understand | 6–8 hrs | Implemented |
+| 3 — Prepare | 4–5 hrs | Implemented |
+| 4 — Accessibility | 2–3 hrs | Implemented |
+| 5 — Demo Rehearsal | 2–3 hrs | Script ready |
+| 6 — Discover (stretch) | 4–5 hrs | Implemented |
+| 7 — Architecture & Risk Note | 1 hr | Implemented |
+
+If time runs short, cut scope by narrowing to *fewer document types or a smaller rule corpus* — never by cutting the guardrail stages. A polished two-stage demo with airtight safety beats a three-stage demo that fails the minimum bar.

@@ -6,6 +6,7 @@ import { StageNav } from "@/components/layout/stage-nav";
 import { ProfileStage } from "@/components/profile/profile-stage";
 import { UnderstandStage } from "@/components/understand/understand-stage";
 import { PrepareStage } from "@/components/prepare/prepare-stage";
+import { DiscoverStage } from "@/components/discover/discover-stage";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/hooks/useSession";
 import { useExtraction } from "@/hooks/useExtraction";
@@ -100,6 +101,7 @@ export function App() {
           />
         )}
         {stage === 3 && <PrepareStage token={token} />}
+        {stage === 4 && <DiscoverStage sessionToken={token} />}
 
         <nav aria-label="Stage navigation" className="mt-8 flex justify-between border-t border-neutral-200 pt-6">
           <Button
@@ -117,8 +119,8 @@ export function App() {
           )}
           <Button
             variant="primary"
-            onClick={() => setStage(Math.min(3, stage + 1))}
-            disabled={stage === 3 || !canAdvance}
+            onClick={() => setStage(Math.min(4, stage + 1))}
+            disabled={stage === 4 || !canAdvance}
           >
             Next
           </Button>

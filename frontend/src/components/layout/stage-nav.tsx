@@ -2,6 +2,7 @@ const stages = [
   { id: 1, label: "Profile", description: "Upload & confirm your documents" },
   { id: 2, label: "Understand", description: "Learn about rules & calculations" },
   { id: 3, label: "Prepare", description: "Review & export your packet" },
+  { id: 4, label: "Discover", description: "Find LIHTC properties (stretch)" },
 ];
 
 export function StageNav({

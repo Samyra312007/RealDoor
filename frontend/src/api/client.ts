@@ -114,4 +114,30 @@ export const api = {
 
   getPackets: (token: string) =>
     request<{ session_token: string; packets: any[] }>(`/session/${encodeURIComponent(token)}/packets`),
+
+  listDiscoverProperties: (cbsa: string, minBedrooms?: number, maxBedrooms?: number, minUnits?: number) => {
+    const params = new URLSearchParams({ cbsa });
+    if (minBedrooms !== undefined) params.set("min_bedrooms", String(minBedrooms));
+    if (maxBedrooms !== undefined) params.set("max_bedrooms", String(maxBedrooms));
+    if (minUnits !== undefined) params.set("min_units", String(minUnits));
+    return request<{
+      properties: any[];
+      total_count: number;
+      staleness_note: string;
+      disclaimer: string;
+      filters_applied: any;
+    }>(`/discover/properties?${params.toString()}`);
+  },
+
+  getDiscoverCbsaCodes: () =>
+    request<{ codes: string[] }>("/discover/codes"),
+
+  getFmrContext: (cbsa: string) =>
+    request<{
+      cbsa_code: string;
+      cbsa_name: string;
+      fair_market_rents: Record<string, number>;
+      effective_date: string;
+      context_note: string;
+    }>(`/fmr/?cbsa=${encodeURIComponent(cbsa)}`),
 };
