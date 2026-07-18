@@ -1,2 +1,41 @@
 *.pdf
 RealDoorUpdated.md
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+*.egg
+.venv/
+venv/
+env/
+*.whl
+*.manifest
+*.spec
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Build output
+frontend/dist/
+backend/dist/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+consent_log.jsonl
