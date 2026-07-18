@@ -6,8 +6,14 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
     ...options,
   });
   if (!res.ok) {
-    const err = await res.json().catch(() => ({ detail: res.statusText }));
-    throw new Error(err.detail?.message || err.detail || "Request failed");
+    const err = await res.json().catch(() => ({}));
+    const detail = err.detail;
+    throw new Error(
+      typeof detail === "string" ? detail :
+      detail?.message ? detail.message :
+      err.message ? err.message :
+      res.statusText || "Request failed"
+    );
   }
   return res.json();
 }
@@ -37,8 +43,14 @@ export const api = {
       body: form,
     });
     if (!res.ok) {
-      const err = await res.json().catch(() => ({ detail: res.statusText }));
-      throw new Error(err.detail?.message || err.detail || "Extraction failed");
+      const err = await res.json().catch(() => ({}));
+      const detail = err.detail;
+      throw new Error(
+        typeof detail === "string" ? detail :
+        detail?.message ? detail.message :
+        err.message ? err.message :
+        "We couldn\u2019t read this file \u2014 try a clearer photo or a PDF."
+      );
     }
     return res.json();
   },
