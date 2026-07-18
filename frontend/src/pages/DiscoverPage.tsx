@@ -1,12 +1,12 @@
-import { useState } from "react";
-import { Card } from "@/components/ui/card";
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { LedgerStamp } from "@/components/ui/ledger-stamp";
 import { useDiscover, type Property } from "@/hooks/useDiscover";
 import { useSessionContext } from "@/lib/session-context";
 import {
   Building2, MapPin, Users, BedDouble, Calendar,
-  AlertTriangle, AlertCircle, Info, Sliders,
+  AlertCircle, Info,
 } from "lucide-react";
 
 const CBSA_OPTIONS: Record<string, string> = {
@@ -81,7 +81,7 @@ function PropertyCard({ property }: { property: Property }) {
       </div>
 
       <p className="mt-1 font-mono text-[10px] italic text-ink/40">
-        Location only — contact property for current availability
+        Location only \u2014 contact property for current availability
       </p>
     </div>
   );
@@ -90,8 +90,8 @@ function PropertyCard({ property }: { property: Property }) {
 export function DiscoverPage() {
   const { token } = useSessionContext();
   const {
-    properties, totalCount, loading, error, stalenessNote, disclaimer,
-    fmr, fmrLoading, search, loadFmr, setError,
+    properties, totalCount, loading, error,
+    search, setError,
   } = useDiscover();
 
   const [selectedCbsa, setSelectedCbsa] = useState("12086");
@@ -99,9 +99,8 @@ export function DiscoverPage() {
   const [maxBedrooms, setMaxBedrooms] = useState("");
   const [minUnits, setMinUnits] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
-  const [showFiltersInfo, setShowFiltersInfo] = useState(false);
 
-  const handleSearch = async () => {
+  const handleSearch = useCallback(async () => {
     setError(null);
     try {
       await search(
@@ -111,34 +110,33 @@ export function DiscoverPage() {
         minUnits !== "" ? Number(minUnits) : undefined
       );
       setHasSearched(true);
-      loadFmr(selectedCbsa);
     } catch {
       /* error state set by hook */
     }
-  };
+  }, [search, setError, selectedCbsa, minBedrooms, maxBedrooms, minUnits]);
 
   return (
     <section aria-labelledby="discover-heading">
       <h2 id="discover-heading" className="mb-1 font-display text-xl font-semibold text-ink">
-        Stage 04 — Discover Properties
+        Stage 04 \u2014 Discover Properties
       </h2>
       <p className="mb-6 font-sans text-sm text-ink/50">
         Browse LIHTC properties in your target metro area. All data is for location reference only.
         Contact properties directly for current availability, income limits, and application status.
       </p>
 
+      {/* Staleness banner — always visible, stamped notice, not dismissible */}
       <div
-        role="alert"
-        className="mb-4 flex items-start gap-2 border border-review/30 bg-review/5 p-3"
+        className="mb-6 border-2 border-brass/40 bg-brass/5 p-4"
+        role="status"
       >
-        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-review" aria-hidden="true" />
-        <div>
-          <p className="font-sans text-xs font-medium text-review">Data staleness</p>
-          <p className="font-mono text-2xs text-review/70">
-            HUD LIHTC database — projects through 2024 only.
-            Contact properties for current availability and income limits.
-          </p>
+        <div className="mb-2">
+          <LedgerStamp variant="brass">HUD 2024</LedgerStamp>
         </div>
+        <p className="font-sans text-sm leading-relaxed text-ink/70">
+          Data from HUD LIHTC through 2024 \u2014 contact properties
+          for current availability and income limits.
+        </p>
       </div>
 
       {error && (
@@ -148,7 +146,14 @@ export function DiscoverPage() {
         </div>
       )}
 
-      <Card title="Search properties" className="mb-6">
+      {/* Filter controls — renter-selected values only */}
+      <div className="mb-6 border border-line bg-paper p-4">
+        <div className="mb-3">
+          <h3 className="font-display text-base font-semibold text-ink">Filters</h3>
+          <p className="font-sans text-2xs text-ink/40">
+            All filters are your choice \u2014 the system never ranks or recommends
+          </p>
+        </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           <div>
             <label htmlFor="cbsa-select" className="mb-1 block font-sans text-sm font-medium text-ink/80">
@@ -216,88 +221,38 @@ export function DiscoverPage() {
               className="w-full"
               aria-busy={loading}
             >
-              {loading ? "Searching..." : "Search"}
+              {loading ? "Searching\u2026" : "Search"}
             </Button>
           </div>
         </div>
-      </Card>
+      </div>
 
+      {/* Result count */}
       {hasSearched && !loading && (
-        <div className="mb-4 flex flex-wrap items-center gap-3" role="status" aria-live="polite">
+        <div className="mb-4" role="status" aria-live="polite">
           <span className="inline-flex items-center gap-1 border border-brass/30 px-2 py-0.5 font-mono text-2xs font-medium text-brass">
             <Building2 className="h-3 w-3" aria-hidden="true" />
             {totalCount} propert{totalCount === 1 ? "y" : "ies"} found
           </span>
-          <span className="font-mono text-2xs text-ink/40">{CBSA_OPTIONS[selectedCbsa]} ({selectedCbsa})</span>
-          <Button variant="ghost" size="sm" onClick={() => setShowFiltersInfo(!showFiltersInfo)} aria-expanded={showFiltersInfo}>
-            <Sliders className="mr-1 h-3 w-3" aria-hidden="true" />
-            Filters
-          </Button>
+          <span className="ml-2 font-mono text-2xs text-ink/40">
+            {CBSA_OPTIONS[selectedCbsa]} ({selectedCbsa})
+          </span>
         </div>
-      )}
-
-      {showFiltersInfo && hasSearched && (
-        <Card title="Filters applied" className="mb-4">
-          <div className="space-y-1 font-mono text-2xs text-ink/60">
-            <p>Metro Area: {CBSA_OPTIONS[selectedCbsa]}</p>
-            <p>Min Bedrooms: {minBedrooms || "any"}</p>
-            <p>Max Bedrooms: {maxBedrooms || "any"}</p>
-            <p>Min Total Units: {minUnits || "any"}</p>
-          </div>
-          <details className="mt-3">
-            <summary className="cursor-pointer font-mono text-2xs text-ink/40 hover:text-ink/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass rounded">
-              How these filters work
-            </summary>
-            <ul className="mt-2 space-y-1">
-              <li className="flex items-start gap-2 font-mono text-2xs text-ink/50">
-                <span className="mt-1 block h-1 w-1 shrink-0 rounded-full bg-line" aria-hidden="true" />
-                Metro area filters by metropolitan statistical area
-              </li>
-              <li className="flex items-start gap-2 font-mono text-2xs text-ink/50">
-                <span className="mt-1 block h-1 w-1 shrink-0 rounded-full bg-line" aria-hidden="true" />
-                Min/max bedrooms filter by unit bedroom count
-              </li>
-              <li className="flex items-start gap-2 font-mono text-2xs text-ink/50">
-                <span className="mt-1 block h-1 w-1 shrink-0 rounded-full bg-line" aria-hidden="true" />
-                Min total units filters by property size
-              </li>
-            </ul>
-          </details>
-        </Card>
-      )}
-
-      {fmr && !loading && hasSearched && (
-        <Card title="Fair Market Rents context" className="mb-6">
-          <p className="mb-3 font-sans text-2xs text-ink/50 italic">
-            Market context, not an asking rent or eligibility criterion.
-          </p>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-            {Object.entries(fmr.fair_market_rents).map(([bedroom, amount]) => (
-              <div key={bedroom} className="border border-line bg-line/20 p-2 text-center">
-                <p className="font-mono text-2xs text-ink/40">{bedroom.replace(/_/g, " ")}</p>
-                <p className="font-mono text-sm font-semibold text-ink">${typeof amount === "number" ? amount.toLocaleString() : amount}</p>
-              </div>
-            ))}
-          </div>
-          <p className="mt-2 font-mono text-2xs text-ink/30">
-            Source: HUD FY2026 FMR, effective {fmr.effective_date}
-          </p>
-        </Card>
       )}
 
       {loading && (
         <div role="status" aria-live="polite" className="py-8 text-center">
-          <p className="font-sans text-sm text-ink/50">Loading properties...</p>
+          <p className="font-sans text-sm text-ink/50">Loading properties\u2026</p>
         </div>
       )}
 
       {!loading && hasSearched && properties.length === 0 && (
-        <Card className="mb-6">
-          <p className="flex items-center gap-2 font-sans text-sm text-ink/50">
-            <Info className="h-4 w-4" aria-hidden="true" />
+        <div className="border border-line bg-line/20 p-6 text-center">
+          <p className="flex items-center justify-center gap-2 font-sans text-sm text-ink/50">
+            <Info className="h-4 w-4 shrink-0" aria-hidden="true" />
             No properties match your filters. Try adjusting your search criteria.
           </p>
-        </Card>
+        </div>
       )}
 
       {!loading && properties.length > 0 && (
@@ -305,15 +260,6 @@ export function DiscoverPage() {
           {properties.map((p, i) => (
             <PropertyCard key={`${p.property_name}-${i}`} property={p} />
           ))}
-        </div>
-      )}
-
-      {hasSearched && disclaimer && (
-        <div className="mt-6 border border-line bg-line/20 p-4">
-          <div className="flex items-start gap-2">
-            <Info className="mt-0.5 h-4 w-4 shrink-0 text-ink/30" aria-hidden="true" />
-            <p className="font-mono text-2xs text-ink/40">{disclaimer}</p>
-          </div>
         </div>
       )}
     </section>
