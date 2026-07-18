@@ -57,10 +57,10 @@ export const api = {
       body: JSON.stringify(profile),
     }),
 
-  askRule: (question: string, context?: any) =>
+  askRule: (question: string, sessionToken?: string) =>
     request<any>("/rules/ask", {
       method: "POST",
-      body: JSON.stringify({ question, context }),
+      body: JSON.stringify({ question, session_token: sessionToken || "" }),
     }),
 
   calculate: (annualIncome: number, householdSize: number, countyOrCbsa: string) =>
@@ -71,6 +71,12 @@ export const api = {
         household_size: householdSize,
         county_or_cbsa: countyOrCbsa,
       }),
+    }),
+
+  calculateFromProfile: (sessionToken: string) =>
+    request<any>("/calc/from-profile", {
+      method: "POST",
+      body: JSON.stringify({ session_token: sessionToken }),
     }),
 
   getChecklist: (program: string, token: string) =>

@@ -5,17 +5,27 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 
 export function UnderstandStage({
+  sessionToken,
   onAskQuestion,
   onCalculate,
+  onCalculateFromProfile,
+  onExplainCalculation,
   answer,
   calcResult,
   calcLoading,
+  explaining,
+  explanation,
 }: {
+  sessionToken: string;
   onAskQuestion: (q: string) => Promise<void>;
   onCalculate: (income: number, hhSize: number, county: string) => Promise<void>;
+  onCalculateFromProfile: (token: string) => Promise<void>;
+  onExplainCalculation: () => Promise<void>;
   answer: any;
   calcResult: any;
   calcLoading: boolean;
+  explaining: boolean;
+  explanation: string | null;
 }) {
   const [question, setQuestion] = useState("");
   const [income, setIncome] = useState("");
@@ -82,6 +92,24 @@ export function UnderstandStage({
 
         <Card title="Income Calculator">
           <div className="space-y-4">
+            <Button
+              onClick={() => onCalculateFromProfile(sessionToken)}
+              disabled={calcLoading}
+              className="w-full"
+              variant="primary"
+            >
+              {calcLoading ? "Calculating from profile..." : "Calculate from Confirmed Profile"}
+            </Button>
+
+            <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-neutral-300" />
+              </div>
+              <div className="relative flex justify-center">
+                <span className="bg-white px-2 text-xs text-neutral-400">or manual entry</span>
+              </div>
+            </div>
+
             <Input
               label="Annual income ($)"
               type="number"
@@ -113,12 +141,27 @@ export function UnderstandStage({
               <div role="region" aria-label="Calculation result" className="mt-4 space-y-3 rounded-lg border bg-neutral-50 p-4">
                 <div className="space-y-2">
                   <p className="text-sm font-medium">Calculation Trace</p>
-                  {calcResult.formula_steps?.map((step: string, i: number) => (
+                  {calcResult.formula_steps?.slice(0, 6).map((step: string, i: number) => (
                     <p key={i} className="text-xs text-neutral-700">
                       {step}
                     </p>
                   ))}
+                  {calcResult.formula_steps?.length > 6 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={onExplainCalculation}
+                      disabled={explaining}
+                    >
+                      {explaining ? "Loading..." : "Explain this calculation"}
+                    </Button>
+                  )}
                 </div>
+                {explanation && (
+                  <div className="mt-2 rounded bg-neutral-100 p-3">
+                    <pre className="whitespace-pre-wrap text-xs text-neutral-700">{explanation}</pre>
+                  </div>
+                )}
                 {calcResult.income_limit_50 && (
                   <div className="mt-3 grid grid-cols-3 gap-2">
                     <div>

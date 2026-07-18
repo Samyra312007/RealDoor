@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "program": "MTSP",
+    "year": 2026,
+    "effective_date": "2026-05-01",
+    "source_url": "https://www.huduser.gov/portal/datasets/mtsp.html",
+    "description": "HUD Metropolitan Statistical Area (MSA) income limits for the Section 8 Housing Choice Voucher program"
+  },
+  "regions": [
+    {
+      "cbsa_code": "12086",
+      "cbsa_name": "Atlanta-Sandy Springs-Alpharetta, GA",
+      "state": "GA",
+      "counties": ["Fulton", "DeKalb", "Gwinnett", "Cobb", "Clayton"],
+      "income_limits": [
+        { "household_size": 1, "ami_30": 33750, "ami_50": 56250, "ami_60": 62700 },
+        { "household_size": 2, "ami_30": 38550, "ami_50": 64250, "ami_60": 71600 },
+        { "household_size": 3, "ami_30": 43350, "ami_50": 72250, "ami_60": 80500 },
+        { "household_size": 4, "ami_30": 48150, "ami_50": 80250, "ami_60": 89400 },
+        { "household_size": 5, "ami_30": 52000, "ami_50": 86700, "ami_60": 96600 },
+        { "household_size": 6, "ami_30": 55850, "ami_50": 93100, "ami_60": 103750 },
+        { "household_size": 7, "ami_30": 59700, "ami_50": 99500, "ami_60": 110900 },
+        { "household_size": 8, "ami_30": 63550, "ami_50": 105900, "ami_60": 118050 }
+      ]
+    },
+    {
+      "cbsa_code": "16980",
+      "cbsa_name": "Chicago-Naperville-Elgin, IL-IN-WI",
+      "state": "IL",
+      "counties": ["Cook", "DuPage", "Lake", "Will", "Kane"],
+      "income_limits": [
+        { "household_size": 1, "ami_30": 36150, "ami_50": 60250, "ami_60": 67200 },
+        { "household_size": 2, "ami_30": 41300, "ami_50": 68850, "ami_60": 76800 },
+        { "household_size": 3, "ami_30": 46450, "ami_50": 77450, "ami_60": 86400 },
+        { "household_size": 4, "ami_30": 51600, "ami_50": 86000, "ami_60": 95900 },
+        { "household_size": 5, "ami_30": 55750, "ami_50": 92900, "ami_60": 103600 },
+        { "household_size": 6, "ami_30": 59850, "ami_50": 99800, "ami_60": 111250 },
+        { "household_size": 7, "ami_30": 64000, "ami_50": 106700, "ami_60": 118900 },
+        { "household_size": 8, "ami_30": 68100, "ami_50": 113550, "ami_60": 126550 }
+      ]
+    },
+    {
+      "cbsa_code": "31080",
+      "cbsa_name": "Los Angeles-Long Beach-Anaheim, CA",
+      "state": "CA",
+      "counties": ["Los Angeles", "Orange"],
+      "income_limits": [
+        { "household_size": 1, "ami_30": 42400, "ami_50": 70650, "ami_60": 78800 },
+        { "household_size": 2, "ami_30": 48450, "ami_50": 80750, "ami_60": 90000 },
+        { "household_size": 3, "ami_30": 54500, "ami_50": 90800, "ami_60": 101250 },
+        { "household_size": 4, "ami_30": 60550, "ami_50": 100900, "ami_60": 112500 },
+        { "household_size": 5, "ami_30": 65400, "ami_50": 109000, "ami_60": 121550 },
+        { "household_size": 6, "ami_30": 70250, "ami_50": 117050, "ami_60": 130550 },
+        { "household_size": 7, "ami_30": 75050, "ami_50": 125100, "ami_60": 139550 },
+        { "household_size": 8, "ami_30": 79900, "ami_50": 133150, "ami_60": 148500 }
+      ]
+    },
+    {
+      "cbsa_code": "35620",
+      "cbsa_name": "New York-Newark-Jersey City, NY-NJ-PA",
+      "state": "NY",
+      "counties": ["New York", "Kings", "Queens", "Bronx", "Richmond"],
+      "income_limits": [
+        { "household_size": 1, "ami_30": 44050, "ami_50": 73400, "ami_60": 81900 },
+        { "household_size": 2, "ami_30": 50350, "ami_50": 83900, "ami_60": 93600 },
+        { "household_size": 3, "ami_30": 56600, "ami_50": 94350, "ami_60": 105250 },
+        { "household_size": 4, "ami_30": 62900, "ami_50": 104850, "ami_60": 116950 },
+        { "household_size": 5, "ami_30": 67950, "ami_50": 113250, "ami_60": 126300 },
+        { "household_size": 6, "ami_30": 72950, "ami_50": 121600, "ami_60": 135650 },
+        { "household_size": 7, "ami_30": 78000, "ami_50": 130000, "ami_60": 145000 },
+        { "household_size": 8, "ami_30": 83000, "ami_50": 138350, "ami_60": 154350 }
+      ]
+    },
+    {
+      "cbsa_code": "26420",
+      "cbsa_name": "Houston-The Woodlands-Sugar Land, TX",
+      "state": "TX",
+      "counties": ["Harris", "Fort Bend", "Montgomery"],
+      "income_limits": [
+        { "household_size": 1, "ami_30": 33000, "ami_50": 55000, "ami_60": 61300 },
+        { "household_size": 2, "ami_30": 37700, "ami_50": 62850, "ami_60": 70100 },
+        { "household_size": 3, "ami_30": 42400, "ami_50": 70700, "ami_60": 78800 },
+        { "household_size": 4, "ami_30": 47100, "ami_50": 78500, "ami_60": 87500 },
+        { "household_size": 5, "ami_30": 50900, "ami_50": 84800, "ami_60": 94500 },
+        { "household_size": 6, "ami_30": 54650, "ami_50": 91100, "ami_60": 101550 },
+        { "household_size": 7, "ami_30": 58450, "ami_50": 97400, "ami_60": 108600 },
+        { "household_size": 8, "ami_30": 62200, "ami_50": 103700, "ami_60": 115600 }
+      ]
+    },
+    {
+      "cbsa_code": "47900",
+      "cbsa_name": "Washington-Arlington-Alexandria, DC-VA-MD",
+      "state": "DC",
+      "counties": ["District of Columbia", "Arlington", "Fairfax", "Montgomery", "Prince George's"],
+      "income_limits": [
+        { "household_size": 1, "ami_30": 47900, "ami_50": 79850, "ami_60": 89100 },
+        { "household_size": 2, "ami_30": 54750, "ami_50": 91250, "ami_60": 101800 },
+        { "household_size": 3, "ami_30": 61550, "ami_50": 102600, "ami_60": 114450 },
+        { "household_size": 4, "ami_30": 68400, "ami_50": 114000, "ami_60": 127150 },
+        { "household_size": 5, "ami_30": 73900, "ami_50": 123150, "ami_60": 137350 },
+        { "household_size": 6, "ami_30": 79350, "ami_50": 132250, "ami_60": 147500 },
+        { "household_size": 7, "ami_30": 84800, "ami_50": 141350, "ami_60": 157650 },
+        { "household_size": 8, "ami_30": 90250, "ami_50": 150450, "ami_60": 167800 }
+      ]
+    },
+    {
+      "cbsa_code": "19100",
+      "cbsa_name": "Dallas-Fort Worth-Arlington, TX",
+      "state": "TX",
+      "counties": ["Dallas", "Tarrant", "Collin", "Denton"],
+      "income_limits": [
+        { "household_size": 1, "ami_30": 34800, "ami_50": 58000, "ami_60": 64700 },
+        { "household_size": 2, "ami_30": 39750, "ami_50": 66300, "ami_60": 73900 },
+        { "household_size": 3, "ami_30": 44750, "ami_50": 74550, "ami_60": 83100 },
+        { "household_size": 4, "ami_30": 49700, "ami_50": 82850, "ami_60": 92400 },
+        { "household_size": 5, "ami_30": 53700, "ami_50": 89500, "ami_60": 99800 },
+        { "household_size": 6, "ami_30": 57650, "ami_50": 96100, "ami_60": 107200 },
+        { "household_size": 7, "ami_30": 61650, "ami_50": 102750, "ami_60": 114600 },
+        { "household_size": 8, "ami_30": 65600, "ami_50": 109350, "ami_60": 121950 }
+      ]
+    },
+    {
+      "cbsa_code": "37980",
+      "cbsa_name": "Philadelphia-Camden-Wilmington, PA-NJ-DE-MD",
+      "state": "PA",
+      "counties": ["Philadelphia", "Delaware", "Montgomery", "Bucks", "Chester"],
+      "income_limits": [
+        { "household_size": 1, "ami_30": 36900, "ami_50": 61500, "ami_60": 68600 },
+        { "household_size": 2, "ami_30": 42150, "ami_50": 70300, "ami_60": 78400 },
+        { "household_size": 3, "ami_30": 47450, "ami_50": 79050, "ami_60": 88200 },
+        { "household_size": 4, "ami_30": 52700, "ami_50": 87850, "ami_60": 98000 },
+        { "household_size": 5, "ami_30": 56900, "ami_50": 94900, "ami_60": 105850 },
+        { "household_size": 6, "ami_30": 61150, "ami_50": 101900, "ami_60": 113650 },
+        { "household_size": 7, "ami_30": 65350, "ami_50": 108950, "ami_60": 121500 },
+        { "household_size": 8, "ami_30": 69600, "ami_50": 116000, "ami_60": 129350 }
+      ]
+    },
+    {
+      "cbsa_code": "19820",
+      "cbsa_name": "Detroit-Warren-Dearborn, MI",
+      "state": "MI",
+      "counties": ["Wayne", "Oakland", "Macomb"],
+      "income_limits": [
+        { "household_size": 1, "ami_30": 32200, "ami_50": 53650, "ami_60": 59800 },
+        { "household_size": 2, "ami_30": 36800, "ami_50": 61300, "ami_60": 68400 },
+        { "household_size": 3, "ami_30": 41400, "ami_50": 69000, "ami_60": 76900 },
+        { "household_size": 4, "ami_30": 45950, "ami_50": 76600, "ami_60": 85400 },
+        { "household_size": 5, "ami_30": 49650, "ami_50": 82750, "ami_60": 92300 },
+        { "household_size": 6, "ami_30": 53300, "ami_50": 88850, "ami_60": 99100 },
+        { "household_size": 7, "ami_30": 57000, "ami_50": 95000, "ami_60": 105950 },
+        { "household_size": 8, "ami_30": 60650, "ami_50": 101100, "ami_60": 112800 }
+      ]
+    },
+    {
+      "cbsa_code": "42660",
+      "cbsa_name": "Seattle-Tacoma-Bellevue, WA",
+      "state": "WA",
+      "counties": ["King", "Snohomish", "Pierce"],
+      "income_limits": [
+        { "household_size": 1, "ami_30": 44500, "ami_50": 74150, "ami_60": 82700 },
+        { "household_size": 2, "ami_30": 50850, "ami_50": 84750, "ami_60": 94500 },
+        { "household_size": 3, "ami_30": 57200, "ami_50": 95300, "ami_60": 106300 },
+        { "household_size": 4, "ami_30": 63550, "ami_50": 105900, "ami_60": 118100 },
+        { "household_size": 5, "ami_30": 68650, "ami_50": 114450, "ami_60": 127650 },
+        { "household_size": 6, "ami_30": 73750, "ami_50": 122900, "ami_60": 137100 },
+        { "household_size": 7, "ami_30": 78800, "ami_50": 131400, "ami_60": 146550 },
+        { "household_size": 8, "ami_30": 83850, "ami_50": 139800, "ami_60": 155950 }
+      ]
+    },
+    {
+      "cbsa_code": "default",
+      "cbsa_name": "National Non-Metro (default)",
+      "state": "US",
+      "counties": ["Non-metropolitan areas"],
+      "income_limits": [
+        { "household_size": 1, "ami_30": 29550, "ami_50": 49250, "ami_60": 54900 },
+        { "household_size": 2, "ami_30": 33750, "ami_50": 56300, "ami_60": 62700 },
+        { "household_size": 3, "ami_30": 38000, "ami_50": 63300, "ami_60": 70600 },
+        { "household_size": 4, "ami_30": 42200, "ami_50": 70300, "ami_60": 78400 },
+        { "household_size": 5, "ami_30": 45550, "ami_50": 75950, "ami_60": 84700 },
+        { "household_size": 6, "ami_30": 48950, "ami_50": 81550, "ami_60": 91000 },
+        { "household_size": 7, "ami_30": 52300, "ami_50": 87200, "ami_60": 97250 },
+        { "household_size": 8, "ami_30": 55700, "ami_50": 92800, "ami_60": 103500 }
+      ]
+    }
+  ]
+}

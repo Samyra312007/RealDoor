@@ -100,6 +100,10 @@ class CalculationRequest(BaseModel):
     county_or_cbsa: str
 
 
+class SessionCalcRequest(BaseModel):
+    session_token: str
+
+
 class CalculationResult(BaseModel):
     annual_income: float
     household_size: int

@@ -25,7 +25,15 @@ export function App() {
     needsReviewRef,
   } = useExtraction(token);
   const { answer, askQuestion } = useRules();
-  const { result: calcResult, loading: calcLoading, calculate } = useCalculator();
+  const {
+    result: calcResult,
+    loading: calcLoading,
+    explaining,
+    explanation,
+    calculate,
+    calculateFromProfile,
+    explainCalculation,
+  } = useCalculator();
   const [stage, setStage] = useState(1);
 
   if (!token) {
@@ -78,11 +86,16 @@ export function App() {
         )}
         {stage === 2 && (
           <UnderstandStage
-            onAskQuestion={askQuestion}
+            sessionToken={token}
+            onAskQuestion={(q) => askQuestion(q, token)}
             onCalculate={calculate}
+            onCalculateFromProfile={calculateFromProfile}
+            onExplainCalculation={explainCalculation}
             answer={answer}
             calcResult={calcResult}
             calcLoading={calcLoading}
+            explaining={explaining}
+            explanation={explanation}
           />
         )}
         {stage === 3 && <PrepareStage token={token} />}
