@@ -5,6 +5,8 @@ from typing import Optional
 DATA_DIR = Path(__file__).parent.parent / "data"
 LIHTC_FILE = DATA_DIR / "lihtc_2024_filtered.csv"
 
+DATA_COVERAGE_NOTE = "HUD LIHTC database — projects through 2024 only"
+
 
 class LIHTCService:
     def __init__(self):
@@ -17,14 +19,22 @@ class LIHTCService:
         with open(LIHTC_FILE, encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
-                row["total_units"] = int(row["total_units"])
-                row["low_income_units"] = int(row["low_income_units"])
-                row["bedroom_studio"] = int(row["bedroom_studio"])
-                row["bedroom_1br"] = int(row["bedroom_1br"])
-                row["bedroom_2br"] = int(row["bedroom_2br"])
-                row["bedroom_3br"] = int(row["bedroom_3br"])
-                row["year_placed_in_service"] = int(row["year_placed_in_service"])
-                self._properties.append(row)
+                bedroom_mix = {
+                    "0": int(row["bedroom_studio"]),
+                    "1": int(row["bedroom_1br"]),
+                    "2": int(row["bedroom_2br"]),
+                    "3": int(row["bedroom_3br"]),
+                }
+                self._properties.append({
+                    "property_name": row["property_name"],
+                    "address": row["address"],
+                    "cbsa_code": row["cbsa_code"],
+                    "total_units": int(row["total_units"]),
+                    "low_income_units": int(row["low_income_units"]),
+                    "bedroom_mix": bedroom_mix,
+                    "year_placed_in_service": int(row["year_placed_in_service"]),
+                    "data_coverage_note": DATA_COVERAGE_NOTE,
+                })
 
     @property
     def properties(self) -> list[dict]:
@@ -42,22 +52,18 @@ class LIHTCService:
             results = [
                 p
                 for p in results
-                if (
-                    (min_bedrooms <= 0 and p["bedroom_studio"] > 0)
-                    or (min_bedrooms <= 1 and p["bedroom_1br"] > 0)
-                    or (min_bedrooms <= 2 and p["bedroom_2br"] > 0)
-                    or (min_bedrooms <= 3 and p["bedroom_3br"] > 0)
+                if any(
+                    int(br) >= min_bedrooms and count > 0
+                    for br, count in p["bedroom_mix"].items()
                 )
             ]
         if max_bedrooms is not None:
             results = [
                 p
                 for p in results
-                if not (
-                    (max_bedrooms < 0 and p["bedroom_studio"] > 0)
-                    or (max_bedrooms < 1 and p["bedroom_1br"] > 0)
-                    or (max_bedrooms < 2 and p["bedroom_2br"] > 0)
-                    or (max_bedrooms < 3 and p["bedroom_3br"] > 0)
+                if any(
+                    int(br) <= max_bedrooms and count > 0
+                    for br, count in p["bedroom_mix"].items()
                 )
             ]
         if min_units is not None:

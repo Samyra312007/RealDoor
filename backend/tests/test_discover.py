@@ -18,6 +18,14 @@ def test_discover_list_properties():
     assert "HUD LIHTC" in data["staleness_note"]
     for p in data["properties"]:
         assert p["cbsa_code"] == "12086"
+        assert "bedroom_mix" in p
+        assert isinstance(p["bedroom_mix"], dict)
+        assert "0" in p["bedroom_mix"]
+        assert "1" in p["bedroom_mix"]
+        assert "2" in p["bedroom_mix"]
+        assert "3" in p["bedroom_mix"]
+        assert p["data_coverage_note"]
+        assert "HUD LIHTC" in p["data_coverage_note"]
 
 
 def test_discover_filter_min_units():
@@ -28,14 +36,34 @@ def test_discover_filter_min_units():
         assert p["total_units"] >= 100
 
 
-def test_discover_filter_bedrooms():
+def test_discover_filter_min_bedrooms():
     resp = client.get("/discover/properties?cbsa=12086&min_bedrooms=2")
     assert resp.status_code == 200
     data = resp.json()
     for p in data["properties"]:
-        assert (
-            p["bedroom_2br"] > 0 or p["bedroom_3br"] > 0
-        )
+        bm = p["bedroom_mix"]
+        has_2plus = (bm.get("2", 0) > 0) or (bm.get("3", 0) > 0)
+        assert has_2plus, f"{p['property_name']} has no 2BR+ units"
+
+
+def test_discover_filter_max_bedrooms():
+    resp = client.get("/discover/properties?cbsa=12086&max_bedrooms=1")
+    assert resp.status_code == 200
+    data = resp.json()
+    for p in data["properties"]:
+        bm = p["bedroom_mix"]
+        has_0or1 = (bm.get("0", 0) > 0) or (bm.get("1", 0) > 0)
+        assert has_0or1, f"{p['property_name']} has no studio or 1BR units"
+
+
+def test_discover_filter_bedroom_range():
+    resp = client.get("/discover/properties?cbsa=12086&min_bedrooms=1&max_bedrooms=2")
+    assert resp.status_code == 200
+    data = resp.json()
+    for p in data["properties"]:
+        bm = p["bedroom_mix"]
+        has_1or2 = (bm.get("1", 0) > 0) or (bm.get("2", 0) > 0)
+        assert has_1or2
 
 
 def test_discover_empty_cbsa():
@@ -55,6 +83,17 @@ def test_discover_codes_endpoint():
     assert "12086" in data["codes"]
     assert "16980" in data["codes"]
     assert "31080" in data["codes"]
+
+
+def test_discover_filters_applied_in_response():
+    resp = client.get("/discover/properties?cbsa=12086&min_bedrooms=2&min_units=80")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "filters_applied" in data
+    fa = data["filters_applied"]
+    assert fa["cbsa"] == "12086"
+    assert fa["min_bedrooms"] == 2
+    assert fa["min_units"] == 80
 
 
 def test_fmr_context():

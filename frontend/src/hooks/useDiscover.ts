@@ -7,11 +7,9 @@ export type Property = {
   cbsa_code: string;
   total_units: number;
   low_income_units: number;
-  bedroom_studio: number;
-  bedroom_1br: number;
-  bedroom_2br: number;
-  bedroom_3br: number;
+  bedroom_mix: Record<string, number>;
   year_placed_in_service: number;
+  data_coverage_note: string;
 };
 
 export type FmrData = {
@@ -29,6 +27,7 @@ export function useDiscover() {
   const [error, setError] = useState<string | null>(null);
   const [stalenessNote, setStalenessNote] = useState("");
   const [disclaimer, setDisclaimer] = useState("");
+  const [filtersApplied, setFiltersApplied] = useState<Record<string, any>>({});
   const [fmr, setFmr] = useState<FmrData | null>(null);
   const [fmrLoading, setFmrLoading] = useState(false);
 
@@ -52,6 +51,7 @@ export function useDiscover() {
         setTotalCount(data.total_count);
         setStalenessNote(data.staleness_note);
         setDisclaimer(data.disclaimer);
+        setFiltersApplied(data.filters_applied || {});
         return data;
       } catch (e: any) {
         setError(e.message);
@@ -85,6 +85,7 @@ export function useDiscover() {
     error,
     stalenessNote,
     disclaimer,
+    filtersApplied,
     fmr,
     fmrLoading,
     search,

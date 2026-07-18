@@ -12,8 +12,8 @@ import {
   Calendar,
   AlertTriangle,
   AlertCircle,
-  Home,
   Info,
+  Sliders,
 } from "lucide-react";
 
 const CBSA_OPTIONS: Record<string, string> = {
@@ -23,6 +23,28 @@ const CBSA_OPTIONS: Record<string, string> = {
   "35620": "New York, NY",
   "19100": "Dallas, TX",
 };
+
+const BEDROOM_OPTIONS = [
+  { value: "", label: "Any" },
+  { value: "0", label: "Studio" },
+  { value: "1", label: "1 BR" },
+  { value: "2", label: "2 BR" },
+  { value: "3", label: "3 BR" },
+];
+
+const BEDROOM_LABELS: Record<string, string> = {
+  "0": "Studio",
+  "1": "1 BR",
+  "2": "2 BR",
+  "3": "3 BR",
+};
+
+const FILTER_FEATURES = [
+  "Metro Area (CBSA code) — filters by metropolitan statistical area",
+  "Min Bedrooms — only properties with units ≥ selected bedroom count",
+  "Max Bedrooms — only properties with units ≤ selected bedroom count",
+  "Min Total Units — only properties with at least N total units",
+];
 
 function PropertyCard({ property }: { property: Property }) {
   return (
@@ -58,35 +80,24 @@ function PropertyCard({ property }: { property: Property }) {
       </div>
 
       <div className="flex flex-wrap gap-1.5" role="list" aria-label="Bedroom mix">
-        {property.bedroom_studio > 0 && (
-          <span className="inline-flex items-center gap-0.5 rounded-full bg-neutral-100 px-2 py-0.5 text-xs text-neutral-600">
-            <BedDouble className="h-3 w-3" aria-hidden="true" />
-            Studio: {property.bedroom_studio}
-          </span>
-        )}
-        {property.bedroom_1br > 0 && (
-          <span className="inline-flex items-center gap-0.5 rounded-full bg-neutral-100 px-2 py-0.5 text-xs text-neutral-600">
-            <BedDouble className="h-3 w-3" aria-hidden="true" />
-            1BR: {property.bedroom_1br}
-          </span>
-        )}
-        {property.bedroom_2br > 0 && (
-          <span className="inline-flex items-center gap-0.5 rounded-full bg-neutral-100 px-2 py-0.5 text-xs text-neutral-600">
-            <BedDouble className="h-3 w-3" aria-hidden="true" />
-            2BR: {property.bedroom_2br}
-          </span>
-        )}
-        {property.bedroom_3br > 0 && (
-          <span className="inline-flex items-center gap-0.5 rounded-full bg-neutral-100 px-2 py-0.5 text-xs text-neutral-600">
-            <BedDouble className="h-3 w-3" aria-hidden="true" />
-            3BR: {property.bedroom_3br}
-          </span>
-        )}
+        {Object.entries(property.bedroom_mix).map(([br, count]) => {
+          if (count <= 0) return null;
+          return (
+            <span
+              key={br}
+              className="inline-flex items-center gap-0.5 rounded-full bg-neutral-100 px-2 py-0.5 text-xs text-neutral-600"
+            >
+              <BedDouble className="h-3 w-3" aria-hidden="true" />
+              {BEDROOM_LABELS[br] || `${br} BR`}: {count}
+            </span>
+          );
+        })}
       </div>
 
       <p className="mt-1 text-[10px] italic text-neutral-400">
         Location only — contact property for current availability
       </p>
+      <p className="text-[10px] text-neutral-400">{property.data_coverage_note}</p>
     </div>
   );
 }
@@ -99,6 +110,7 @@ export function DiscoverStage({ sessionToken }: { sessionToken: string | null })
     error,
     stalenessNote,
     disclaimer,
+    filtersApplied,
     fmr,
     fmrLoading,
     search,
@@ -108,17 +120,19 @@ export function DiscoverStage({ sessionToken }: { sessionToken: string | null })
 
   const [selectedCbsa, setSelectedCbsa] = useState("12086");
   const [minBedrooms, setMinBedrooms] = useState("");
+  const [maxBedrooms, setMaxBedrooms] = useState("");
   const [minUnits, setMinUnits] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
+  const [showFiltersInfo, setShowFiltersInfo] = useState(false);
 
   const handleSearch = async () => {
     setError(null);
     try {
       await search(
         selectedCbsa,
-        minBedrooms ? Number(minBedrooms) : undefined,
-        undefined,
-        minUnits ? Number(minUnits) : undefined
+        minBedrooms !== "" ? Number(minBedrooms) : undefined,
+        maxBedrooms !== "" ? Number(maxBedrooms) : undefined,
+        minUnits !== "" ? Number(minUnits) : undefined
       );
       setHasSearched(true);
       loadFmr(selectedCbsa);
@@ -156,7 +170,7 @@ export function DiscoverStage({ sessionToken }: { sessionToken: string | null })
       )}
 
       <Card title="Search Properties" className="mb-6">
-        <div className="grid gap-4 sm:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           <div>
             <label htmlFor="cbsa-select" className="mb-1 block text-sm font-medium text-neutral-700">
               Metro Area
@@ -174,15 +188,40 @@ export function DiscoverStage({ sessionToken }: { sessionToken: string | null })
               ))}
             </select>
           </div>
-          <Input
-            label="Min Bedrooms"
-            type="number"
-            placeholder="e.g. 2"
-            value={minBedrooms}
-            onChange={(e) => setMinBedrooms(e.target.value)}
-            min={0}
-            max={3}
-          />
+          <div>
+            <label htmlFor="min-bedrooms" className="mb-1 block text-sm font-medium text-neutral-700">
+              Min Bedrooms
+            </label>
+            <select
+              id="min-bedrooms"
+              value={minBedrooms}
+              onChange={(e) => setMinBedrooms(e.target.value)}
+              className="flex h-10 w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+            >
+              {BEDROOM_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="max-bedrooms" className="mb-1 block text-sm font-medium text-neutral-700">
+              Max Bedrooms
+            </label>
+            <select
+              id="max-bedrooms"
+              value={maxBedrooms}
+              onChange={(e) => setMaxBedrooms(e.target.value)}
+              className="flex h-10 w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+            >
+              {BEDROOM_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </div>
           <Input
             label="Min Total Units"
             type="number"
@@ -211,7 +250,37 @@ export function DiscoverStage({ sessionToken }: { sessionToken: string | null })
             {totalCount} propert{totalCount === 1 ? "y" : "ies"} found
           </span>
           <span className="text-xs text-neutral-500">{CBSA_OPTIONS[selectedCbsa]} ({selectedCbsa})</span>
+          <Button variant="ghost" size="sm" onClick={() => setShowFiltersInfo(!showFiltersInfo)} aria-expanded={showFiltersInfo}>
+            <Sliders className="mr-1 h-3 w-3" aria-hidden="true" />
+            Filters
+          </Button>
         </div>
+      )}
+
+      {showFiltersInfo && hasSearched && (
+        <Card title="Filters Applied" className="mb-4">
+          <ul className="space-y-1 text-xs text-neutral-600" role="list">
+            {Object.entries(filtersApplied).map(([key, value]) => (
+              <li key={key} className="flex gap-2">
+                <span className="font-medium capitalize">{key.replace(/_/g, " ")}:</span>
+                <span>{value !== null && value !== undefined ? String(value) : "none"}</span>
+              </li>
+            ))}
+          </ul>
+          <details className="mt-3">
+            <summary className="cursor-pointer text-xs text-neutral-500 hover:text-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 rounded">
+              How these filters work
+            </summary>
+            <ul className="mt-2 space-y-1" role="list">
+              {FILTER_FEATURES.map((f, i) => (
+                <li key={i} className="flex items-start gap-2 text-xs text-neutral-500">
+                  <span className="mt-1 block h-1 w-1 shrink-0 rounded-full bg-neutral-400" aria-hidden="true" />
+                  {f}
+                </li>
+              ))}
+            </ul>
+          </details>
+        </Card>
       )}
 
       {fmr && !loading && hasSearched && (
