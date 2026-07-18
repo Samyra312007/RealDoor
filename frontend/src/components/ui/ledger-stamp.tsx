@@ -4,6 +4,7 @@ const stampVariants = {
   confirmed: "border-confirmed text-confirmed",
   review: "border-review text-review",
   expired: "border-expired text-expired",
+  skipped: "border-dashed border-line text-ink/40",
   brass: "border-brass text-brass",
   default: "border-brass text-brass",
 } as const;
@@ -26,7 +27,7 @@ export function LedgerStamp({
         stampVariants[variant],
         className
       )}
-      aria-label={`${variant === "confirmed" ? "Confirmed" : variant === "review" ? "Review" : variant === "expired" ? "Expired" : variant === "brass" ? "Stamped" : "Stamped"}: ${typeof children === "string" ? children : ""}`}
+      aria-label={`${variant === "confirmed" ? "Confirmed" : variant === "skipped" ? "Skipped" : variant === "review" ? "Review" : variant === "expired" ? "Expired" : variant === "brass" ? "Stamped" : "Stamped"}: ${typeof children === "string" ? children : ""}`}
     >
       {children}
     </span>
