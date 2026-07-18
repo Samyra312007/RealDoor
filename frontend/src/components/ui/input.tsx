@@ -12,7 +12,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="space-y-1">
         {label && (
-          <label htmlFor={inputId} className="block text-sm font-medium text-neutral-700">
+          <label htmlFor={inputId} className="block font-sans text-sm font-medium text-ink/80">
             {label}
           </label>
         )}
@@ -22,18 +22,18 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           aria-invalid={!!error}
           aria-describedby={error ? `${inputId}-error` : undefined}
           className={cn(
-            "flex h-10 w-full rounded-md border bg-white px-3 py-2 text-sm",
-            "file:border-0 file:bg-transparent file:text-sm file:font-medium",
-            "placeholder:text-neutral-400",
-            "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500",
+            "flex h-10 w-full rounded-sm border bg-paper px-3 py-2 font-sans text-sm text-ink",
+            "file:border-0 file:bg-transparent file:font-sans file:text-sm file:font-medium",
+            "placeholder:text-ink/40",
+            "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass",
             "disabled:cursor-not-allowed disabled:opacity-50",
-            error ? "border-red-500" : "border-neutral-300",
+            error ? "border-expired" : "border-line",
             className
           )}
           {...props}
         />
         {error && (
-          <p id={`${inputId}-error`} className="text-sm text-red-600" role="alert">
+          <p id={`${inputId}-error`} className="font-sans text-sm text-expired" role="alert">
             {error}
           </p>
         )}

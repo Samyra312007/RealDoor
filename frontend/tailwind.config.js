@@ -3,22 +3,25 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      fontFamily: {
+        display: ['"Fraunces"', "Georgia", "serif"],
+        sans: ['"Inter"', '"IBM Plex Sans"', "system-ui", "sans-serif"],
+        mono: ['"IBM Plex Mono"', "Consolas", "monospace"],
+      },
       colors: {
-        brand: {
-          50: "#f0f7ff",
-          100: "#e0effe",
-          200: "#bae0fd",
-          300: "#7cc8fb",
-          400: "#36aaf5",
-          500: "#0c8ee7",
-          600: "#0070c4",
-          700: "#01599f",
-          800: "#064c83",
-          900: "#0b406d",
-        },
+        ink: "#1E2A38",
+        paper: "#FAF8F3",
+        brass: "#A87C3F",
+        confirmed: "#4B6F52",
+        review: "#C08A2E",
+        expired: "#9B4238",
+        line: "#DDD6C8",
       },
       fontSize: {
         "2xs": ["0.6875rem", { lineHeight: "1rem" }],
+      },
+      rotate: {
+        "stamp": "-1.5deg",
       },
     },
   },

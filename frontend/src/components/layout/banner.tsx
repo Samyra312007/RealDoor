@@ -6,7 +6,7 @@ export function Banner() {
     <div
       role="status"
       aria-live="polite"
-      className="bg-brand-700 px-4 py-2 text-center text-sm font-medium text-white"
+      className="border-b border-line bg-ink/5 px-4 py-2 text-center font-sans text-xs font-medium text-ink/60"
     >
       <span className="sr-only">Design principle: </span>
       {DESIGN_PRINCIPLE}

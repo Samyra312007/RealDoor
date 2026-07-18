@@ -3,16 +3,40 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --ink: #1E2A38;
+    --paper: #FAF8F3;
+    --brass: #A87C3F;
+    --confirmed: #4B6F52;
+    --review: #C08A2E;
+    --expired: #9B4238;
+    --line: #DDD6C8;
+  }
+
+  html {
+    font-family: "Inter", "IBM Plex Sans", system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+  }
+
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-brand-500;
+    outline: 2px solid var(--brass);
+    outline-offset: 2px;
   }
 
   *:focus:not(:focus-visible) {
     outline: none;
   }
 
-  h1, h2, h3, h4 {
-    @apply font-semibold tracking-tight;
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 

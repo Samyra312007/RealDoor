@@ -12,14 +12,14 @@ export function Card({
   return (
     <div
       className={cn(
-        "rounded-lg border border-neutral-200 bg-white p-6 shadow-sm",
+        "border border-line bg-paper/50 p-5",
         className
       )}
       role="region"
       aria-label={title}
     >
       {title && (
-        <h3 className="mb-4 text-lg font-semibold text-neutral-900">{title}</h3>
+        <h3 className="mb-4 font-display text-lg font-semibold text-ink">{title}</h3>
       )}
       {children}
     </div>

@@ -1,23 +1,20 @@
 export function Header({ onDelete }: { onDelete: () => void }) {
   return (
-    <header className="sticky top-0 z-50 border-b border-neutral-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-      <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4">
-        <div className="flex items-center gap-3">
-          <span className="text-xl font-bold text-brand-700" aria-hidden="true">
-            RD
+    <header className="sticky top-0 z-50 border-b border-line bg-paper/95 backdrop-blur supports-[backdrop-filter]:bg-paper/60">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
+        <div className="flex items-center gap-2">
+          <span className="font-display text-xl font-semibold tracking-tight text-ink" aria-hidden="true">
+            RealDoor
           </span>
-          <div>
-            <h1 className="text-lg font-semibold text-neutral-900">RealDoor</h1>
-            <p className="text-xs text-neutral-500">
-              Application-Readiness Copilot
-            </p>
-          </div>
+          <span className="hidden self-end pb-[3px] font-sans text-2xs text-ink/40 sm:inline">
+            Application-Readiness Copilot
+          </span>
         </div>
         <nav aria-label="Session actions">
           <button
             onClick={onDelete}
-            className="rounded-md px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
-            aria-label="Delete session and all data"
+            className="rounded-sm border border-expired/30 px-3 py-1 font-sans text-xs text-expired hover:bg-expired/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-expired"
+            aria-label="Delete my data and end session"
           >
             Delete my data
           </button>

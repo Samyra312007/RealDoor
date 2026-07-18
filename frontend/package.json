@@ -9,18 +9,19 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "@radix-ui/react-alert-dialog": "^1.1.1",
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-label": "^2.1.0",
+    "@radix-ui/react-progress": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.2",
-    "@radix-ui/react-alert-dialog": "^1.1.1",
-    "@radix-ui/react-progress": "^1.1.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "tailwind-merge": "^2.5.2",
-    "lucide-react": "^0.441.0"
+    "lucide-react": "^0.441.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.18.1",
+    "tailwind-merge": "^2.5.2"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
