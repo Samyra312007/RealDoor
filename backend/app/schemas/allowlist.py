@@ -35,6 +35,9 @@ class ExtractedField(BaseModel):
     requires_confirmation: bool = Field(
         True, description="Must be confirmed by renter before use"
     )
+    needs_review: bool = Field(
+        False, description="Confidence below threshold, needs human review"
+    )
 
 
 class ExtractionResult(BaseModel):

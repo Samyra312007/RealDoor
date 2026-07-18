@@ -13,8 +13,17 @@ import { useCalculator } from "@/hooks/useCalculator";
 
 export function App() {
   const { token, createSession, deleteSession, loading: sessionLoading } = useSession();
-  const { fields, loading: extractLoading, error: extractError, uploadDocument, confirmField } =
-    useExtraction(token);
+  const {
+    fields,
+    loading: extractLoading,
+    error: extractError,
+    uploads,
+    uploadDocument,
+    confirmField,
+    skipField,
+    allConfirmed,
+    needsReviewRef,
+  } = useExtraction(token);
   const { answer, askQuestion } = useRules();
   const { result: calcResult, loading: calcLoading, calculate } = useCalculator();
   const [stage, setStage] = useState(1);
@@ -39,6 +48,8 @@ export function App() {
     );
   }
 
+  const canAdvance = stage !== 1 || allConfirmed || fields.length === 0;
+
   return (
     <div className="min-h-screen bg-neutral-50">
       <a
@@ -58,8 +69,11 @@ export function App() {
             fields={fields}
             loading={extractLoading}
             error={extractError}
+            uploads={uploads}
             onUpload={uploadDocument}
             onConfirm={confirmField}
+            onSkip={skipField}
+            needsReviewRef={needsReviewRef}
           />
         )}
         {stage === 2 && (
@@ -81,10 +95,15 @@ export function App() {
           >
             Previous
           </Button>
+          {stage === 1 && fields.length > 0 && !allConfirmed && (
+            <p className="text-xs text-amber-600 self-center">
+              Confirm or skip all fields to proceed
+            </p>
+          )}
           <Button
             variant="primary"
             onClick={() => setStage(Math.min(3, stage + 1))}
-            disabled={stage === 3}
+            disabled={stage === 3 || !canAdvance}
           >
             Next
           </Button>
