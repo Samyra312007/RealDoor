@@ -87,4 +87,28 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ session_token: token, include_fields: includeFields }),
     }),
+
+  downloadPacket: async (packetId: string, token: string) => {
+    const res = await fetch(`${BASE_URL}/packet/download/${packetId}?session_token=${encodeURIComponent(token)}`);
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: res.statusText }));
+      throw new Error(err.detail?.message || err.detail || "Download failed");
+    }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `RealDoor_packet_${packetId}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    return blob;
+  },
+
+  deletePacket: (packetId: string, token: string) =>
+    request<{ message: string }>(`/packet/${packetId}?session_token=${encodeURIComponent(token)}`, { method: "DELETE" }),
+
+  getPackets: (token: string) =>
+    request<{ session_token: string; packets: any[] }>(`/session/${encodeURIComponent(token)}/packets`),
 };

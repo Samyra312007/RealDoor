@@ -53,3 +53,22 @@ def get_session_log(token: str):
         "consent_log": session.get("consent_log", []),
         "total_actions": len(session.get("consent_log", [])),
     }
+
+
+@router.get("/{token}/packets", response_model=dict)
+def get_session_packets(token: str):
+    session = session_store.get_session(token)
+    if session is None:
+        raise HTTPException(status_code=404, detail="Session not found or expired")
+    packets = [
+        {
+            "packet_id": p["packet_id"],
+            "created_at": p["created_at"],
+            "fields_included": len(p.get("include_fields", [])),
+        }
+        for p in session.get("packets", [])
+    ]
+    return {
+        "session_token": token[:16] + "...",
+        "packets": packets,
+    }

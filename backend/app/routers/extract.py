@@ -51,6 +51,12 @@ async def extract_document(
 
     session["extracted_fields"] = [f.model_dump() for f in result.fields]
 
+    session_store.add_document(
+        session_token,
+        result.document_type.value,
+        [f.field_name for f in result.fields],
+    )
+
     session_store.log_action(session_token, "document_uploaded", file.filename)
 
     return result

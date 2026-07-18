@@ -24,6 +24,7 @@ class SessionStore:
                 "profile": None,
                 "extracted_fields": [],
                 "confirmed_fields": [],
+                "documents": [],
                 "rule_queries": [],
                 "calculations": [],
                 "packets": [],
@@ -67,6 +68,24 @@ class SessionStore:
                 except Exception:
                     pass
         return profile
+
+    def add_document(self, token: str, doc_type: str, field_names: list[str]) -> bool:
+        session = self.get_session(token)
+        if session is None:
+            return False
+        with self._lock:
+            session.setdefault("documents", []).append({
+                "doc_type": doc_type,
+                "uploaded_at": time.time(),
+                "field_names": field_names,
+            })
+        return True
+
+    def get_documents(self, token: str) -> list[dict]:
+        session = self.get_session(token)
+        if session is None:
+            return []
+        return session.get("documents", [])
 
     def delete_session(self, token: str) -> bool:
         with self._lock:
