@@ -104,22 +104,27 @@ export function MobileStageIndicator({
       </span>
       <span className="font-display text-sm font-medium text-ink">{current.label}</span>
       <span className="ml-auto flex gap-1">
-        {[1, 2, 3].map((s) => {
-          const status = stageStatuses[s];
-          return (
-            <span
-              key={s}
-              className={cn(
-                "h-1.5 w-1.5 rounded-full",
-                status === "confirmed"
-                  ? "bg-confirmed"
-                  : status === "in-progress"
-                  ? "bg-brass"
-                  : "bg-line"
-              )}
-            />
-          );
-        })}
+          {[1, 2, 3].map((s) => {
+            const status = stageStatuses[s];
+            const label =
+              s === 2 ? "Understand" :
+              s === 3 ? "Prepare" :
+              "Profile";
+            return (
+              <span
+                key={s}
+                className={cn(
+                  "h-1.5 w-1.5 rounded-full",
+                  status === "confirmed"
+                    ? "bg-confirmed"
+                    : status === "in-progress"
+                    ? "bg-brass"
+                    : "bg-line"
+                )}
+                aria-label={`Stage ${label}: ${status === "confirmed" ? "confirmed" : status === "in-progress" ? "in progress" : "not started"}`}
+              />
+            );
+          })}
       </span>
     </div>
   );

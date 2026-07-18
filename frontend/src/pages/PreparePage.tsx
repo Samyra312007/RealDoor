@@ -518,6 +518,9 @@ export function PreparePage() {
             </button>
           ) : (
             <div className="space-y-4">
+              <div role="status" aria-live="polite" className="sr-only">
+                Packet ready. {toggledItems.size} item{toggledItems.size !== 1 ? "s" : ""} included.
+              </div>
               <div className="flex items-start gap-3 border border-confirmed/30 bg-confirmed/5 p-4">
                 <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-confirmed" aria-hidden="true" />
                 <div>

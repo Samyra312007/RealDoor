@@ -156,34 +156,34 @@ function FieldRow({
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <div className="mb-1 flex items-center gap-2">
-            <p className="font-sans text-xs font-medium uppercase tracking-wider text-ink/50">
-              {FIELD_LABELS[field.field_name] || field.field_name.replace(/_/g, " ")}
-            </p>
-            <ConfidenceBadge confidence={field.confidence} />
-          </div>
-
-          {showInput ? (
-            <div className="flex items-center gap-2">
-              <div className="flex-1">
-                <input
-                  type={isNumeric ? "text" : "text"}
-                  value={draft}
-                  onChange={(e) => setDraft(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder={
-                    field.confidence < 0.7
-                      ? "Needs your input \u2014 not found in document"
-                      : "Edit value if needed"
-                  }
-                  className={`w-full rounded-sm border bg-paper px-3 py-1.5 font-sans text-sm text-ink placeholder:text-ink/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass ${
-                    field.needs_review ? "border-review" : "border-line"
-                  } ${isNumeric ? "font-mono" : ""}`}
-                  aria-label={FIELD_LABELS[field.field_name] || field.field_name}
-                  autoComplete="off"
-                />
-              </div>
+            <div className="mb-1 flex items-center gap-2">
+              <label htmlFor={`field-${field.field_name}`} className="font-sans text-xs font-medium uppercase tracking-wider text-ink/50">
+                {FIELD_LABELS[field.field_name] || field.field_name.replace(/_/g, " ")}
+              </label>
+              <ConfidenceBadge confidence={field.confidence} />
             </div>
+
+            {showInput ? (
+              <div className="flex items-center gap-2">
+                <div className="flex-1">
+                  <input
+                    id={`field-${field.field_name}`}
+                    type={isNumeric ? "text" : "text"}
+                    value={draft}
+                    onChange={(e) => setDraft(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder={
+                      field.confidence < 0.7
+                        ? "Needs your input \u2014 not found in document"
+                        : "Edit value if needed"
+                    }
+                    className={`w-full rounded-sm border bg-paper px-3 py-1.5 font-sans text-sm text-ink placeholder:text-ink/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass ${
+                      field.needs_review ? "border-review" : "border-line"
+                    } ${isNumeric ? "font-mono" : ""}`}
+                    autoComplete="off"
+                  />
+                </div>
+              </div>
           ) : (
             <p className={`font-sans text-sm ${isNumeric ? "font-mono" : ""} ${
               isSkipped ? "text-ink/40 italic" : "text-ink"
@@ -423,6 +423,11 @@ export function ProfilePage() {
             </div>
           )}
 
+          {!extractLoading && hasFields && (
+            <div role="status" aria-live="polite" className="sr-only">
+              Extraction complete. {confirmedOrSkippedCount} of {totalFields} fields ready for review.
+            </div>
+          )}
           {hasFields && (
             <div>
               <div className="mb-1 flex items-center gap-2">

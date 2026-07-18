@@ -148,7 +148,7 @@ function QAPanel({
 
       {/* NORMAL ANSWER with receipt-tape citation strip */}
       {hasAnswer && !loading && (
-        <div className="border border-line p-4">
+        <div role="status" aria-live="polite" className="border border-line p-4">
           <p className="font-sans text-sm leading-relaxed text-ink">{answer.answer}</p>
           {answer.citations?.length > 0 && (
             <div className="mt-4">
@@ -293,6 +293,11 @@ function CalculatorPanel({
       </div>
 
       {/* FORMULA TRACE — receipt-style */}
+      {calcResult && !calcLoading && (
+        <div role="status" aria-live="polite" className="sr-only">
+          Calculation complete. AMI percentage: {typeof calcResult.ami_percentage === "number" ? calcResult.ami_percentage.toFixed(1) : calcResult.ami_percentage}%.
+        </div>
+      )}
       {calcResult && !calcLoading && (
         <div className="border border-line bg-paper">
           <div className="p-4 pb-3">
