@@ -92,6 +92,9 @@
 | Radix UI primitives | MIT | Accessible UI components |
 | Lucide React | ISC | Icons |
 | class-variance-authority | Apache 2.0 | Component variants |
+| clsx | MIT | Conditional class names |
+| tailwind-merge | MIT | Tailwind class merge utility |
+| shadcn/ui | MIT | Component pattern library (built on Radix UI) |
 | FastAPI 0.115 | MIT | API framework |
 | Uvicorn | BSD 3-Clause | ASGI server |
 | Pydantic 2 | MIT | Schema validation |
