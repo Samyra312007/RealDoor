@@ -241,11 +241,6 @@ function DesignPrincipleSection() {
           <Eye className="mr-2 h-4 w-4 text-brass" aria-hidden="true" />
           <span className="font-mono text-2xs font-medium tracking-wider text-brass uppercase">Design Principle</span>
         </div>
-        <blockquote className="font-display text-balance text-xl leading-relaxed text-ink/80 sm:text-2xl">
-          &ldquo;The AI extracts, explains, retrieves, calculates, and prepares.{" "}
-          <span className="text-brass">The renter confirms.</span>{" "}
-          A qualified human decides.&rdquo;
-        </blockquote>
         <div className="mt-8 flex items-center justify-center gap-4">
           {[
             { label: "One Metro", desc: "Keep the context local" },
@@ -279,9 +274,6 @@ function TechFooter() {
             MIT License
           </a>
         </div>
-        <p className="mt-2 font-sans text-xs text-ink/30">
-          The AI extracts, explains, retrieves, calculates, and prepares. The renter confirms. A qualified human decides.
-        </p>
       </div>
     </footer>
   );

@@ -322,7 +322,7 @@ export function PreparePage() {
   return (
     <section aria-labelledby="prepare-heading">
       <h2 id="prepare-heading" className="mb-1 font-display text-xl font-semibold text-ink">
-        Stage 03 \u2014 Prepare
+        Stage 03 <span className="text-brass">/</span> Prepare
       </h2>
       <p className="mb-6 font-sans text-sm text-ink/50">
         Review what you have, what needs updating, and what&rsquo;s missing.
