@@ -15,6 +15,10 @@
     {
       "key": "ENCRYPTION_KEY",
       "value": "TlCmXcZsAz5XshJHttaJoWk-VbOMVBR6fC1vRmgKU84="
+    },
+    {
+      "key": "PYTHON_VERSION",
+      "value": "3.12"
     }
   ]
 }
