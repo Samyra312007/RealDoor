@@ -26,6 +26,14 @@ def _normalize_value(field_name: str, value: str) -> str:
             return "true"
         if value.lower() in ("no", "false", "n/a"):
             return "false"
+    if field_name == "voucher_type":
+        norm = value.lower().replace(" ", "")
+        if norm in ("section8", "section_8"):
+            return "section8"
+        if norm == "portable":
+            return "portable"
+        if norm in ("other", "none", "n/a", ""):
+            return "other"
     return value
 
 

@@ -63,7 +63,7 @@ class RenterProfile(BaseModel):
     monthly_income: Optional[float] = Field(None, ge=0.0)
     income_source: Optional[IncomeSource] = None
     has_voucher: Optional[bool] = None
-    voucher_type: Optional[str] = Field(None, pattern=r"^(section8|other|)$")
+    voucher_type: Optional[str] = Field(None, pattern=r"^(section8|other|portable|)$")
     current_address: Optional[str] = Field(None, max_length=500)
     has_government_id: Optional[bool] = None
     is_veteran: Optional[bool] = None

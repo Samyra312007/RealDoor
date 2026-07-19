@@ -29,8 +29,8 @@ export const api = {
     request<{ session_token: string; profile: Record<string, any> }>(`/session/profile?token=${encodeURIComponent(token)}`),
 
   deleteSession: (token: string | null) => {
-    if (!token) return Promise.resolve({ message: "No session to delete" });
-    return request<{ message: string }>(`/session/delete?token=${encodeURIComponent(token)}`, { method: "DELETE" });
+    if (!token || token.trim() === "") return Promise.resolve({ message: "No session to delete" });
+    return request<{ message: string }>(`/session/delete?token=${encodeURIComponent(token.trim())}`, { method: "DELETE" });
   },
 
   getSessionLog: (token: string) =>

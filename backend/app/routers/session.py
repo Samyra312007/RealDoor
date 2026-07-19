@@ -1,9 +1,14 @@
-from fastapi import APIRouter, HTTPException, Response
+from fastapi import APIRouter, HTTPException, Response, Query
 from app.config import settings
 from app.schemas.allowlist import SessionInfo
 from app.guardrails.session_store import session_store
 
 router = APIRouter(prefix="/session", tags=["session"])
+
+
+def _validate_token(token: str) -> None:
+    if not token or not token.strip():
+        raise HTTPException(status_code=400, detail="Session token is required.")
 
 
 @router.post("/create", response_model=dict)
@@ -13,7 +18,8 @@ def create_session():
 
 
 @router.get("/info", response_model=SessionInfo)
-def get_session_info(token: str):
+def get_session_info(token: str = Query(..., description="Session token")):
+    _validate_token(token)
     session = session_store.get_session(token)
     if session is None:
         raise HTTPException(status_code=404, detail="Session not found or expired")
@@ -30,7 +36,8 @@ def get_session_info(token: str):
 
 
 @router.get("/profile", response_model=dict)
-def get_session_profile(token: str):
+def get_session_profile(token: str = Query(..., description="Session token")):
+    _validate_token(token)
     session = session_store.get_session(token)
     if session is None:
         raise HTTPException(status_code=404, detail="Session not found or expired")
@@ -42,7 +49,8 @@ def get_session_profile(token: str):
 
 
 @router.delete("/delete")
-def delete_session(token: str):
+def delete_session(token: str = Query(..., description="Session token")):
+    _validate_token(token)
     if not session_store.delete_session(token):
         raise HTTPException(status_code=404, detail="Session not found")
     return Response(status_code=200)
@@ -50,6 +58,7 @@ def delete_session(token: str):
 
 @router.delete("/{token}")
 def delete_session_by_id(token: str):
+    _validate_token(token)
     if not session_store.delete_session(token):
         raise HTTPException(status_code=404, detail="Session not found")
     return Response(status_code=200)

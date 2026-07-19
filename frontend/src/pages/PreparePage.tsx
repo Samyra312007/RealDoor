@@ -543,7 +543,7 @@ export function PreparePage() {
                   <Download className="h-5 w-5" aria-hidden="true" />
                   Download PDF
                 </button>
-                <Button variant="outline" onClick={() => { setPacketResult(null); setShowPacketPreview(false); }}>
+                <Button variant="outline" onClick={() => navigate("/profile")}>
                   Start over
                 </Button>
               </div>

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { FileText, Search, ClipboardList, Building2, Shield, Lock, CheckCircle2, Clock, Ban, ArrowRight, Sparkles, ScrollText, Eye } from "lucide-react";
 import { useSessionContext } from "@/lib/session-context";
 import { Button } from "@/components/ui/button";
@@ -286,12 +287,37 @@ function TechFooter() {
   );
 }
 
+function DeletedBanner() {
+  const [visible, setVisible] = useState(
+    () => sessionStorage.getItem("real_door_deleted") === "true"
+  );
+  if (!visible) return null;
+  return (
+    <div role="alert" className="border-b border-confirmed/30 bg-confirmed/5 px-4 py-3 text-center fade-slide-in">
+      <p className="font-sans text-sm text-confirmed">
+        Your data has been permanently deleted. You can start a fresh session anytime.
+      </p>
+      <button
+        onClick={() => {
+          sessionStorage.removeItem("real_door_deleted");
+          setVisible(false);
+        }}
+        className="ml-2 font-mono text-2xs text-confirmed/60 underline underline-offset-2 hover:text-confirmed"
+      >
+        Dismiss
+      </button>
+    </div>
+  );
+}
+
 export function LandingPage() {
   const { createSession, sessionLoading } = useSessionContext();
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-paper">
       <div className="paper-texture pointer-events-none fixed inset-0 z-[-1] opacity-30" aria-hidden="true" />
+
+      <DeletedBanner />
 
       <header className="border-b border-line bg-paper/90 backdrop-blur-sm supports-[backdrop-filter]:bg-paper/70">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4">
@@ -302,10 +328,10 @@ export function LandingPage() {
             <span className="font-display text-lg font-semibold text-ink">RealDoor</span>
           </div>
           <nav className="flex items-center gap-4">
-            <a href="#" className="font-sans text-sm text-ink/50 transition-colors hover:text-ink/70 brass-glow rounded-sm px-1.5 py-1">
+            <a href="https://github.com/Samyra312007/RealDoor#readme" target="_blank" rel="noopener noreferrer" className="font-sans text-sm text-ink/50 transition-colors hover:text-ink/70 brass-glow rounded-sm px-1.5 py-1">
               Docs
             </a>
-            <a href="#" className="font-sans text-sm text-ink/50 transition-colors hover:text-ink/70 brass-glow rounded-sm px-1.5 py-1">
+            <a href="https://github.com/Samyra312007/RealDoor" target="_blank" rel="noopener noreferrer" className="font-sans text-sm text-ink/50 transition-colors hover:text-ink/70 brass-glow rounded-sm px-1.5 py-1">
               GitHub
             </a>
           </nav>

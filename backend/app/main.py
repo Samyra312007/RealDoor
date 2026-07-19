@@ -1,5 +1,8 @@
-from fastapi import FastAPI
+import logging
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from app.config import settings
 from app.middleware.refusal import RefusalMiddleware
 from app.middleware.consent_logger import ConsentLoggerMiddleware
@@ -17,6 +20,15 @@ from app.routers import (
     designations,
 )
 
+logger = logging.getLogger("real_door")
+
+HUMAN_ERRORS: dict[str, str] = {
+    "none values not allowed": "This field is required and cannot be empty.",
+    "field required": "A required field is missing. Check your input and try again.",
+    "value is not a valid dict": "Invalid format. Send a valid JSON object.",
+    "value_error.missing": "A required field is missing.",
+}
+
 app = FastAPI(
     title=settings.APP_NAME,
     description="RealDoor — Application-Readiness Copilot. "
@@ -24,6 +36,34 @@ app = FastAPI(
                 "The renter confirms. A qualified human decides.",
     version="0.1.0",
 )
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_handler(request: Request, exc: RequestValidationError):
+    raw = exc.errors()
+    messages = []
+    for err in raw:
+        msg = err.get("msg", "")
+        loc = ".".join(str(x) for x in err.get("loc", []))
+        cleaned = HUMAN_ERRORS.get(msg)
+        if cleaned:
+            messages.append(f"{loc}: {cleaned}" if loc and loc != "body" else cleaned)
+        else:
+            messages.append(msg)
+    return JSONResponse(
+        status_code=422,
+        content={"error": "validation_error", "message": " ".join(messages) if len(messages) <= 2 else messages},
+    )
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.exception("Unhandled exception on %s %s", request.method, request.url.path)
+    return JSONResponse(
+        status_code=500,
+        content={"error": "internal_error", "message": "Something went wrong. Please try again or rephrase your input."},
+    )
+
 
 app.add_middleware(
     CORSMiddleware,
