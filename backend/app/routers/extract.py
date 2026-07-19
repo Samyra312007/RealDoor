@@ -38,7 +38,7 @@ async def extract_document(
     name_lower = (file.filename or "document").lower()
     allowed = settings.ALLOWED_DOCUMENT_TYPES
     if not any(name_lower.endswith(ext.split("/")[-1]) for ext in allowed):
-        if not any(name_lower.endswith(ext) for ext in (".pdf", ".png", ".jpg", ".jpeg")):
+        if not any(name_lower.endswith(ext) for ext in (".pdf", ".png", ".jpg", ".jpeg", ".docx", ".doc")):
             raise HTTPException(status_code=415, detail="Unsupported file type")
 
     raw_text = contents.decode("latin-1", errors="replace")[:10000]
@@ -49,7 +49,7 @@ async def extract_document(
         raw_text = injection_defense.sanitize_for_model(raw_text)
         contents = raw_text.encode("latin-1", errors="replace")
 
-    result = process_document(contents, file.filename or "document.pdf")
+    result = process_document(contents, file.filename or "document")
     result.fields = _filter_allowlist(result.fields)
 
     text_hash = hashlib.sha256(raw_text.encode()).hexdigest()

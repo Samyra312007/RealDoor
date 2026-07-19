@@ -1,5 +1,4 @@
 import io
-import os
 import re
 import logging
 from typing import Optional
@@ -101,6 +100,54 @@ def _ocr_pdf_via_images(content: bytes) -> Optional[str]:
         return None
 
 
+def _extract_docx_text(content: bytes) -> Optional[str]:
+    try:
+        from docx import Document
+        doc = Document(io.BytesIO(content))
+        paragraphs = [p.text for p in doc.paragraphs if p.text.strip()]
+        if paragraphs:
+            return "\n\n".join(paragraphs)
+        return None
+    except Exception as e:
+        logger.warning("DOCX extraction failed: %s", e)
+        return None
+
+
+def _extract_doc_olefile(content: bytes) -> Optional[str]:
+    try:
+        import olefile
+        ole = olefile.OleFileIO(io.BytesIO(content))
+        result = []
+
+        if ole.exists("WordDocument"):
+            data = ole.openstream("WordDocument").read()
+            ole.close()
+
+            buf = []
+            for i in range(0, len(data) - 1, 2):
+                char_code = data[i] | (data[i + 1] << 8)
+                if 0x20 <= char_code <= 0x7E or char_code in (0x0A, 0x0D, 0x09):
+                    buf.append(chr(char_code))
+                elif 0xA0 <= char_code <= 0xFF:
+                    buf.append(chr(char_code))
+                else:
+                    if len(buf) > 3:
+                        result.append("".join(buf))
+                    buf = []
+
+            if len(buf) > 3:
+                result.append("".join(buf))
+
+            text = "\n".join(result)
+            if text.strip():
+                return text.strip()
+
+        return None
+    except Exception as e:
+        logger.warning("Legacy .doc extraction failed: %s", e)
+        return None
+
+
 def _is_tesseract_available() -> bool:
     try:
         import pytesseract
@@ -129,6 +176,18 @@ def extract_text_from_bytes(content: bytes, filename: str) -> str:
             return "[Could not extract text from this PDF. It may be a scanned document with no OCR system available.]"
 
         return "[Could not extract text from this PDF. Try uploading a text-based PDF (not a scanned document).]"
+
+    elif name_lower.endswith(".docx"):
+        text = _extract_docx_text(content)
+        if text:
+            return text
+        return f"[Could not read text from {filename}. The document may be empty or corrupted.]"
+
+    elif name_lower.endswith(".doc"):
+        text = _extract_doc_olefile(content)
+        if text:
+            return text
+        return f"[Could not read text from {filename}. The legacy .doc file may be corrupted or in an unsupported format.]"
 
     elif any(name_lower.endswith(ext) for ext in (".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp")):
         if _is_tesseract_available():

@@ -1,7 +1,7 @@
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { DocsPage } from "@/pages/DocsPage";
 import { useSessionContext } from "@/lib/session-context";
 import { Header } from "@/components/layout/header";
-import { Banner } from "@/components/layout/banner";
 import { FolderRail, MobileStageIndicator, type StageStatus } from "@/components/layout/folder-rail";
 import { StartPage } from "@/pages/StartPage";
 import { ProfilePage } from "@/pages/ProfilePage";
@@ -12,8 +12,18 @@ import { DiscoverPage } from "@/pages/DiscoverPage";
 const STAGE_PATHS = ["/profile", "/understand", "/prepare", "/discover"];
 
 function AppShell() {
-  const { token, fields, allConfirmed, deleteSession, calcResult } = useSessionContext();
+  const { token, fields, allConfirmed, deleteSession, calcResult, resetExtraction, resetCalculator } = useSessionContext();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleDelete = async () => {
+    await deleteSession();
+    resetExtraction();
+    resetCalculator();
+    navigate("/profile");
+  };
+
+  const handleHome = () => navigate("/");
 
   if (!token) {
     return <StartPage />;
@@ -49,8 +59,7 @@ function AppShell() {
         Skip to main content
       </a>
 
-      <Header onDelete={deleteSession} hasFields={fields.length > 0} />
-      <Banner />
+      <Header onDelete={handleDelete} hasFields={fields.length > 0} onHome={handleHome} />
       <MobileStageIndicator currentPath={location.pathname} stageStatuses={stageStatuses} />
 
       <div className="flex flex-1">
@@ -86,5 +95,11 @@ function AppShell() {
 }
 
 export function App() {
-  return <AppShell />;
+  return (
+    <Routes>
+      <Route path="/" element={<StartPage />} />
+      <Route path="/docs" element={<DocsPage />} />
+      <Route path="/*" element={<AppShell />} />
+    </Routes>
+  );
 }

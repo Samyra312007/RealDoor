@@ -347,10 +347,10 @@ export function ProfilePage() {
     e.preventDefault();
     setDragOver(false);
     const files = Array.from(e.dataTransfer.files).filter(
-      (f) => f.size > 0 && (f.name.endsWith(".pdf") || f.name.match(/\.(png|jpg|jpeg)$/i))
+      (f) => f.size > 0 && f.name.match(/\.(pdf|png|jpg|jpeg|doc|docx)$/i)
     );
     if (files.length === 0) {
-      setAnnouncement("We couldn't read that file - try a PDF or an image.");
+      setAnnouncement("We couldn't read that file - try a PDF, image, or Word document.");
       return;
     }
     files.forEach((f) => uploadDocument(f));
@@ -409,7 +409,7 @@ export function ProfilePage() {
       <input
         ref={fileRef}
         type="file"
-        accept=".pdf,.png,.jpg,.jpeg"
+        accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
         multiple
         className="hidden"
         onChange={handleFileSelect}
@@ -422,7 +422,7 @@ export function ProfilePage() {
       <p className="font-sans text-sm font-medium text-ink/70">
         {extractLoading ? "Uploading\u2026" : dragOver ? "Drop your documents here" : "Drop your documents here, or click to browse"}
       </p>
-      <p className="mt-1 font-sans text-2xs text-ink/40">PDF, PNG, or JPEG - up to 10 MB each</p>
+      <p className="mt-1 font-sans text-2xs text-ink/40">PDF, PNG, JPEG, DOC, or DOCX - up to 10 MB each</p>
     </div>
   );
 
@@ -478,7 +478,7 @@ export function ProfilePage() {
               <input
                 ref={fileRef}
                 type="file"
-                accept=".pdf,.png,.jpg,.jpeg"
+                accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
                 multiple
                 className="hidden"
                 onChange={handleFileSelect}

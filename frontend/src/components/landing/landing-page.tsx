@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { FileText, Search, ClipboardList, Building2, Shield, Lock, CheckCircle2, Clock, Ban, ArrowRight, Sparkles, ScrollText, Eye } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { FileText, Search, ClipboardList, Building2, Shield, Lock, CheckCircle2, Clock, Ban, ArrowRight, Sparkles } from "lucide-react";
 import { useSessionContext } from "@/lib/session-context";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Banner } from "@/components/layout/banner";
 import { cn } from "@/lib/utils";
 
 const STAGES = [
@@ -232,53 +232,6 @@ function GuardrailsPanel() {
   );
 }
 
-function DesignPrincipleSection() {
-  return (
-    <section className="relative border-b border-line bg-paper px-4 py-16 text-center" aria-label="Design principle">
-      <div className="paper-texture pointer-events-none absolute inset-0" aria-hidden="true" />
-      <div className="mx-auto max-w-3xl">
-        <div className="mb-6 inline-flex rounded-full bg-brass/5 px-4 py-1.5">
-          <Eye className="mr-2 h-4 w-4 text-brass" aria-hidden="true" />
-          <span className="font-mono text-2xs font-medium tracking-wider text-brass uppercase">Design Principle</span>
-        </div>
-        <div className="mt-8 flex items-center justify-center gap-4">
-          {[
-            { label: "One Metro", desc: "Keep the context local" },
-            { label: "One Program", desc: "Freeze the rules" },
-            { label: "Synthetic Docs", desc: "Protect real renters" },
-            { label: "Human Decision", desc: "No gatekeeping" },
-          ].map((item) => (
-            <div key={item.label} className="text-center">
-              <p className="font-mono text-xs font-semibold text-ink">{item.label}</p>
-              <p className="font-sans text-2xs text-ink/40">{item.desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function TechFooter() {
-  return (
-    <footer className="relative border-t border-line bg-paper px-4 py-8 text-center">
-      <div className="paper-texture pointer-events-none absolute inset-0 opacity-50" />
-      <div className="relative mx-auto max-w-5xl">
-        <div className="flex items-center justify-center gap-2 font-sans text-sm text-ink/50">
-          <ScrollText className="h-4 w-4 text-brass" aria-hidden="true" />
-          <span className="font-display font-semibold text-ink">RealDoor</span>
-          <span aria-hidden="true">·</span>
-          <span>React 19 + FastAPI + Tailwind CSS</span>
-          <span aria-hidden="true">·</span>
-          <a href="#" className="underline underline-offset-2 transition-colors hover:text-ink/70">
-            MIT License
-          </a>
-        </div>
-      </div>
-    </footer>
-  );
-}
-
 function DeletedBanner() {
   const [visible, setVisible] = useState(
     () => sessionStorage.getItem("real_door_deleted") === "true"
@@ -303,7 +256,13 @@ function DeletedBanner() {
 }
 
 export function LandingPage() {
+  const navigate = useNavigate();
   const { createSession, sessionLoading } = useSessionContext();
+
+  const handleStart = async () => {
+    await createSession();
+    navigate("/profile");
+  };
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-paper">
@@ -320,9 +279,9 @@ export function LandingPage() {
             <span className="font-display text-lg font-semibold text-ink">RealDoor</span>
           </div>
           <nav className="flex items-center gap-4">
-            <a href="https://github.com/Samyra312007/RealDoor#readme" target="_blank" rel="noopener noreferrer" className="font-sans text-sm text-ink/50 transition-colors hover:text-ink/70 brass-glow rounded-sm px-1.5 py-1">
+            <Link to="/docs" className="font-sans text-sm text-ink/50 transition-colors hover:text-ink/70 brass-glow rounded-sm px-1.5 py-1">
               Docs
-            </a>
+            </Link>
             <a href="https://github.com/Samyra312007/RealDoor" target="_blank" rel="noopener noreferrer" className="font-sans text-sm text-ink/50 transition-colors hover:text-ink/70 brass-glow rounded-sm px-1.5 py-1">
               GitHub
             </a>
@@ -330,19 +289,13 @@ export function LandingPage() {
         </div>
       </header>
 
-      <Banner />
-
       <main>
-        <HeroSection onCreateSession={createSession} loading={sessionLoading} />
+        <HeroSection onCreateSession={handleStart} loading={sessionLoading} />
         <TrustRow />
-        <ReceiptDivider />
-        <DesignPrincipleSection />
         <ReceiptDivider />
         <HowItWorks />
         <GuardrailsPanel />
       </main>
-
-      <TechFooter />
     </div>
   );
 }

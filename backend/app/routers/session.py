@@ -53,7 +53,7 @@ def delete_session(token: str = Query(..., description="Session token")):
     _validate_token(token)
     if not session_store.delete_session(token):
         raise HTTPException(status_code=404, detail="Session not found")
-    return Response(status_code=200)
+    return {"message": "Session deleted"}
 
 
 @router.delete("/{token}")
@@ -61,7 +61,7 @@ def delete_session_by_id(token: str):
     _validate_token(token)
     if not session_store.delete_session(token):
         raise HTTPException(status_code=404, detail="Session not found")
-    return Response(status_code=200)
+    return {"message": "Session deleted"}
 
 
 @router.get("/{token}/log", response_model=dict)

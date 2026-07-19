@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { ScrollText, Trash2, AlertCircle } from "lucide-react";
 
-export function Header({ onDelete, hasFields }: { onDelete: () => void; hasFields: boolean }) {
+export function Header({ onDelete, hasFields, onHome }: { onDelete: () => void; hasFields: boolean; onHome?: () => void }) {
   const [notification, setNotification] = useState<string | null>(null);
 
   useEffect(() => {
@@ -31,7 +31,11 @@ export function Header({ onDelete, hasFields }: { onDelete: () => void; hasField
         </div>
       )}
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
-        <div className="flex items-center gap-2.5">
+        <button
+          onClick={onHome}
+          className="flex items-center gap-2.5 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass"
+          aria-label="Go to Profile stage"
+        >
           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-brass shadow-sm">
             <ScrollText className="h-4 w-4 text-paper" aria-hidden="true" />
           </div>
@@ -41,7 +45,7 @@ export function Header({ onDelete, hasFields }: { onDelete: () => void; hasField
           <span className="hidden self-center font-sans text-2xs text-ink/30 sm:inline">
             Application-Readiness Copilot
           </span>
-        </div>
+        </button>
         <nav aria-label="Session actions">
           <button
             onClick={handleDelete}

@@ -42,6 +42,11 @@ export function useCalculator() {
     setExplaining(false);
   }, [result]);
 
+  const resetCalculator = useCallback(() => {
+    setResult(null);
+    setExplanation(null);
+  }, []);
+
   return {
     result,
     loading,
@@ -52,5 +57,6 @@ export function useCalculator() {
     explainCalculation,
     setResult,
     setExplanation,
+    resetCalculator,
   };
 }

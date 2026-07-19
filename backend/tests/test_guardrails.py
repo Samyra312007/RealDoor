@@ -40,7 +40,7 @@ def test_session_delete():
     token = create.json()["session_token"]
     resp = client.delete(f"/session/delete?token={token}")
     assert resp.status_code == 200
-    assert resp.text == ""
+    assert resp.json()["message"] == "Session deleted"
     info = client.get(f"/session/info?token={token}")
     assert info.status_code == 404
 
@@ -90,7 +90,7 @@ def test_delete_session_by_id():
     token = create.json()["session_token"]
     resp = client.delete(f"/session/{token}")
     assert resp.status_code == 200
-    assert resp.text == ""
+    assert resp.json()["message"] == "Session deleted"
     info = client.get(f"/session/info?token={token}")
     assert info.status_code == 404
 

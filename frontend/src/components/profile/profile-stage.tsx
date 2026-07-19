@@ -142,7 +142,7 @@ export function ProfileStage({
           <input
             ref={fileRef}
             type="file"
-            accept=".pdf,.png,.jpg,.jpeg"
+            accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
             multiple
             className="hidden"
             onChange={handleFileSelect}

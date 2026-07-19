@@ -28,6 +28,8 @@ type SessionContextValue = {
   calculate: (income: number, hhSize: number, county: string) => Promise<any>;
   calculateFromProfile: (token: string) => Promise<any>;
   explainCalculation: () => Promise<void>;
+  resetExtraction: () => void;
+  resetCalculator: () => void;
 };
 
 const SessionContext = createContext<SessionContextValue | null>(null);
@@ -45,6 +47,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     deleteField,
     allConfirmed,
     needsReviewRef,
+    resetExtraction,
   } = useExtraction(token);
   const { answer, askQuestion } = useRules();
   const {
@@ -55,6 +58,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     calculate,
     calculateFromProfile,
     explainCalculation,
+    resetCalculator,
   } = useCalculator();
 
   return (
@@ -83,6 +87,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         calculate,
         calculateFromProfile,
         explainCalculation,
+        resetExtraction,
+        resetCalculator,
       }}
     >
       {children}

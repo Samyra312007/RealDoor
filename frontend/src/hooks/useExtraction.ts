@@ -120,6 +120,13 @@ export function useExtraction(token: string | null) {
     }, 100);
   }, []);
 
+  const resetExtraction = useCallback(() => {
+    setFields([]);
+    setUploads([]);
+    setLoading(false);
+    setError(null);
+  }, []);
+
   return {
     fields,
     loading,
@@ -134,5 +141,6 @@ export function useExtraction(token: string | null) {
     needsReviewFields,
     needsReviewRef,
     scrollToNeedsReview,
+    resetExtraction,
   };
 }
