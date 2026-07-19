@@ -7,7 +7,7 @@ import { useCalculator } from "@/hooks/useCalculator";
 type SessionContextValue = {
   token: string | null;
   createSession: () => Promise<string | undefined>;
-  deleteSession: () => Promise<void>;
+  deleteSession: () => Promise<{ deleted: boolean; message: string }>;
   sessionLoading: boolean;
   fields: ExtractedField[];
   extractLoading: boolean;

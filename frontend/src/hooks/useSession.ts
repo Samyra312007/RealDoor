@@ -34,11 +34,15 @@ export function useSession() {
   }, [token]);
 
   const deleteSession = useCallback(async () => {
+    if (!token) {
+      return { deleted: false, message: "Nothing is available to delete" };
+    }
     await api.deleteSession(token);
     sessionStorage.removeItem(STORAGE_KEY);
     sessionStorage.setItem("real_door_deleted", "true");
     setToken(null);
     setSessionInfo(null);
+    return { deleted: true, message: "Your data has been permanently deleted" };
   }, [token]);
 
   useEffect(() => {

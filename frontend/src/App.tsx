@@ -49,7 +49,7 @@ function AppShell() {
         Skip to main content
       </a>
 
-      <Header onDelete={deleteSession} />
+      <Header onDelete={deleteSession} hasFields={fields.length > 0} />
       <Banner />
       <MobileStageIndicator currentPath={location.pathname} stageStatuses={stageStatuses} />
 
