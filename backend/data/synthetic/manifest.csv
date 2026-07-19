@@ -1,0 +1,6 @@
+filename,doc_type,annual_income,current_address,full_name,household_size,income_source
+synthetic_0001_bank_statement.pdf,bank_statement,32000,,Patricia Brown,,
+synthetic_0002_bank_statement.pdf,bank_statement,48000,,Maria Garcia,,
+synthetic_0003_pay_stub.pdf,pay_stub,32000,,John Smith,3,employment
+synthetic_0004_bank_statement.pdf,bank_statement,32000,,James Johnson,,
+synthetic_0005_tax_return.pdf,tax_return,52000,,James Johnson,,

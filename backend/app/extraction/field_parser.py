@@ -11,7 +11,7 @@ def _first_group_or_full(match: re.Match) -> str:
 
 FIELD_PATTERNS: dict[str, list[tuple[str, str, float]]] = {
     "full_name": [
-        (r"(?:name|full.name|employee|applicant|tenant|resident|beneficiary)[:\s]+([A-Z][a-z]+(?:[^\S\n]+[A-Z][a-z]+){1,3})", "name_label", 0.85),
+        (r"(?:name|full.name|employee|applicant|tenant|resident|beneficiary|taxpayer|account\s+holder)[:\s]+([A-Z][a-z]+(?:[^\S\n]+[A-Z][a-z]+){1,3})", "name_label", 0.85),
         (r"(?:prepared\s+for|issued\s+to)[:\s]+([A-Z][a-z]+(?:[^\S\n]+[A-Z][a-z]+){1,3})", "prepared_for", 0.8),
     ],
     "annual_income": [
@@ -20,6 +20,8 @@ FIELD_PATTERNS: dict[str, list[tuple[str, str, float]]] = {
         (r"(?:YTD|year.to.date|ytd\s+earnings)[:\s$]*([0-9,]+(?:\.[0-9]{2})?)", "ytd", 0.75),
         (r"(?:gross\s+pay)[:\s$]*([0-9,]+(?:\.[0-9]{2})?)", "gross_pay", 0.7),
         (r"(?:total\s+income)[:\s$]*([0-9,]+(?:\.[0-9]{2})?)", "total_income", 0.8),
+        (r"(?:total\s+deposits)[:\s$]*([0-9,]+(?:\.[0-9]{2})?)", "total_deposits", 0.75),
+        (r"(?:adjusted\s+gross\s+income)[:\s$]*([0-9,]+(?:\.[0-9]{2})?)", "agi", 0.85),
     ],
     "monthly_income": [
         (r"(?:monthly|month)\s+(?:gross\s+)?(?:benefit|income)[:\s$]*([0-9,]+(?:\.[0-9]{2})?)", "monthly_benefit", 0.9),
@@ -34,7 +36,7 @@ FIELD_PATTERNS: dict[str, list[tuple[str, str, float]]] = {
     ],
     "income_source": [
         (r"(?:income\s+source|source\s+of\s+income)[:\s]*([A-Za-z][A-Za-z\s]+)", "source_label", 0.85),
-        (r"(?:employer)[:\s]*([A-Za-z][A-Za-z\s]+)", "employer_name", 0.7),
+        (r"(?:employer|account\s+holder)[:\s]*([A-Za-z][A-Za-z\s']+)", "employer_name", 0.7),
         (r"(?:^|\n)(SSI|SSDI|TANF|SNAP|social.security|unemployment|pension|veterans|employment)", "benefit_type", 0.8),
     ],
     "current_address": [

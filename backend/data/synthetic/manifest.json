@@ -1,0 +1,45 @@
+[
+  {
+    "filename": "synthetic_0001_bank_statement.pdf",
+    "doc_type": "bank_statement",
+    "gold": {
+      "full_name": "Patricia Brown",
+      "annual_income": "32000"
+    }
+  },
+  {
+    "filename": "synthetic_0002_bank_statement.pdf",
+    "doc_type": "bank_statement",
+    "gold": {
+      "full_name": "Maria Garcia",
+      "annual_income": "48000"
+    }
+  },
+  {
+    "filename": "synthetic_0003_pay_stub.pdf",
+    "doc_type": "pay_stub",
+    "gold": {
+      "full_name": "John Smith",
+      "annual_income": "32000",
+      "income_source": "employment",
+      "household_size": "3"
+    }
+  },
+  {
+    "filename": "synthetic_0004_bank_statement.pdf",
+    "doc_type": "bank_statement",
+    "gold": {
+      "full_name": "James Johnson",
+      "annual_income": "32000"
+    }
+  },
+  {
+    "filename": "synthetic_0005_tax_return.pdf",
+    "doc_type": "tax_return",
+    "gold": {
+      "full_name": "James Johnson",
+      "annual_income": "52000",
+      "current_address": ""
+    }
+  }
+]
