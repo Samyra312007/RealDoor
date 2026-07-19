@@ -13,6 +13,7 @@ from app.routers import (
     packet,
     discover,
     fmr,
+    tenant,
 )
 
 app = FastAPI(
@@ -43,6 +44,7 @@ app.include_router(checklist.router)
 app.include_router(packet.router)
 app.include_router(discover.router)
 app.include_router(fmr.router)
+app.include_router(tenant.router)
 
 
 @app.get("/health")
@@ -58,6 +60,7 @@ def health():
             "session_encryption": "active",
             "discover_stretch": "active",
             "fmr_context": "active",
+            "tenant_tables": "active",
         },
         "design_principle": (
             "The AI extracts, explains, retrieves, calculates, and prepares. "

@@ -11,17 +11,17 @@ def test_calculator_basic():
     resp = client.post("/calc/", json={
         "annual_income": 50000,
         "household_size": 3,
-        "county_or_cbsa": "12086",
+        "county_or_cbsa": "12060",
     })
     assert resp.status_code == 200
     data = resp.json()
     assert data["annual_income"] == 50000
     assert data["household_size"] == 3
-    assert data["income_limit_30"] == 43350
-    assert data["income_limit_50"] == 72250
-    assert data["income_limit_60"] == 80500
-    # AMI = 72250 / 0.5 = 144500; income 50000 / 144500 * 100 = 34.6%
-    assert data["ami_percentage"] == 34.6
+    assert data["income_limit_30"] == 31830
+    assert data["income_limit_50"] == 53050
+    assert data["income_limit_60"] == 63660
+    # AMI = 53050 / 0.5 = 106100; income 50000 / 106100 * 100 = 47.1%
+    assert data["ami_percentage"] == 47.1
     assert data["source_url"] == "https://www.huduser.gov/portal/datasets/mtsp.html"
     assert data["effective_date"] == "2026-05-01"
     steps = "\n".join(data["formula_steps"])

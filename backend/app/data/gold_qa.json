@@ -10,7 +10,7 @@
       "id": "qa-001",
       "question": "What is the income limit for a 3-person household in Atlanta?",
       "expected_behavior": "answer",
-      "expected_answer_contains": ["50% of AMI: $72,250", "Atlanta"],
+      "expected_answer_contains": ["50% of AMI: $53,050", "Atlanta"],
       "expected_citations": true,
       "expected_abstained": false
     },
@@ -18,7 +18,7 @@
       "id": "qa-002",
       "question": "What is the 30% AMI limit for a 1-person household in Chicago?",
       "expected_behavior": "answer",
-      "expected_answer_contains": ["30% of AMI: $36,150", "Chicago", "1-person"],
+      "expected_answer_contains": ["30% of AMI: $25,530", "Chicago", "1-person"],
       "expected_citations": true,
       "expected_abstained": false
     },
@@ -26,15 +26,15 @@
       "id": "qa-003",
       "question": "Income limits for a family of 4 in Los Angeles",
       "expected_behavior": "answer",
-      "expected_answer_contains": ["50% of AMI: $100,900", "Los Angeles", "4-person"],
+      "expected_answer_contains": ["50% of AMI: $83,300", "Los Angeles", "4-person"],
       "expected_citations": true,
       "expected_abstained": false
     },
     {
       "id": "qa-004",
-      "question": "What are the 60% AMI limits for a 2-person household in New York?",
+      "question": "What are the 60% AMI limits for a 2-person household in Chicago?",
       "expected_behavior": "answer",
-      "expected_answer_contains": ["60% of AMI: $93,600", "New York", "2-person"],
+      "expected_answer_contains": ["60% of AMI: $58,320", "Chicago", "2-person"],
       "expected_citations": true,
       "expected_abstained": false
     },
@@ -42,7 +42,7 @@
       "id": "qa-005",
       "question": "Income threshold for Dallas 3-person household at 50% AMI",
       "expected_behavior": "answer",
-      "expected_answer_contains": ["50% of AMI: $74,550", "Dallas", "3-person"],
+      "expected_answer_contains": ["50% of AMI: $54,500", "Dallas", "3-person"],
       "expected_citations": true,
       "expected_abstained": false
     },
@@ -90,7 +90,7 @@
       "id": "qa-011",
       "question": "Show me the 50% AMI limit for a 5-person household in Fulton County",
       "expected_behavior": "answer",
-      "expected_answer_contains": ["50% of AMI: $86,700", "Atlanta", "5-person"],
+      "expected_answer_contains": ["50% of AMI: $63,650", "Atlanta", "5-person"],
       "expected_citations": true,
       "expected_abstained": false
     },
@@ -98,7 +98,7 @@
       "id": "qa-012",
       "question": "What income limits apply to a 6-person household in Cook County?",
       "expected_behavior": "answer",
-      "expected_answer_contains": ["50% of AMI: $99,800", "Chicago", "6-person"],
+      "expected_answer_contains": ["50% of AMI: $70,500", "Chicago", "6-person"],
       "expected_citations": true,
       "expected_abstained": false
     },
@@ -130,15 +130,15 @@
       "id": "qa-016",
       "question": "Income limit for an 8-person household in Los Angeles",
       "expected_behavior": "answer",
-      "expected_answer_contains": ["50% of AMI: $133,150", "Los Angeles", "8-person"],
+      "expected_answer_contains": ["50% of AMI: $110,000", "Los Angeles", "8-person"],
       "expected_citations": true,
       "expected_abstained": false
     },
     {
       "id": "qa-017",
-      "question": "What are the income limits for Orange County?",
+      "question": "What are the 2026 income limits for a 1-person household in Orange County?",
       "expected_behavior": "answer",
-      "expected_answer_contains": ["income limit", "Los Angeles"],
+      "expected_answer_contains": ["30% of AMI: $34,980", "Los Angeles", "1-person"],
       "expected_citations": true,
       "expected_abstained": false
     },

@@ -21,17 +21,28 @@ def _tokenize(text: str) -> set[str]:
     return tokens - STOP_WORDS
 
 
+def _is_generic_token(token: str) -> bool:
+    return token in GENERIC_TOKENS or token.isdigit()
+
+
+def _word_in_content(word: str, content: str) -> bool:
+    return bool(re.search(rf"\b{re.escape(word)}\b", content))
+
+
 def _match_score(question_tokens: set[str], chunk: dict) -> float:
     content = chunk["content"].lower()
     meta = chunk["metadata"]
+    cbsa_name = str(meta.get("cbsa_name", "")).lower()
+    counties = str(meta.get("counties", "")).lower()
     score = 0.0
     for token in question_tokens:
-        if token in content:
+        if _word_in_content(token, content):
             score += 1.0
-        if token in str(meta.get("cbsa_name", "")).lower():
-            score += 1.5
-        if token in str(meta.get("counties", "")).lower():
-            score += 1.0
+        if not _is_generic_token(token):
+            if _word_in_content(token, cbsa_name):
+                score += 1.5
+            if _word_in_content(token, counties):
+                score += 1.0
         if token == str(meta.get("household_size", "")):
             score += 2.0
         if token in ("income", "limit", "ami"):
@@ -68,15 +79,59 @@ def search_by_household_size(question: str) -> Optional[int]:
     return None
 
 
+GENERIC_TOKENS = {
+    "income", "limit", "limits", "ami", "household", "person", "people",
+    "family", "county", "counties", "assistance", "rental", "program",
+    "programs", "tell", "show", "explain", "what", "how", "apply",
+    "applied", "approve", "approved", "approval", "qualify", "qualified",
+    "eligible", "eligibility", "maximum", "minimum", "threshold",
+    "thresholds", "studio", "bedroom", "apartment", "unit", "units",
+    "section", "voucher", "benefit", "benefits", "year", "monthly",
+    "annual", "rate", "rates", "market", "housing", "affordable",
+    "low", "income", "search", "find", "looking", "want", "need",
+    "help", "information", "question", "answer", "does", "would",
+    "will", "can", "could", "should", "may", "might", "must",
+}
+
+LOCATION_STOP_WORDS = {
+    "metro", "area", "hud", "fmr", "msa", "city", "town",
+    "urban", "rural", "county", "counties",
+}
+
+
+def _is_location_token(token: str) -> bool:
+    return (
+        len(token) >= 3
+        and token not in GENERIC_TOKENS
+        and token not in LOCATION_STOP_WORDS
+        and not token.isdigit()
+    )
+
+
+def _count_location_matches(tokens: set[str], name: str, counties: str) -> int:
+    score = 0
+    for token in tokens:
+        if not _is_location_token(token):
+            continue
+        if re.search(rf"\b{re.escape(token)}\b", name):
+            score += 3
+        if re.search(rf"\b{re.escape(token)}\b", counties):
+            score += 2
+    return score
+
+
 def search_by_cbsa(question: str) -> Optional[str]:
     tokens = _tokenize(question)
+    best_code = "default"
+    best_score = 0
     for region in corpus._data.get("regions", []):
         name = region["cbsa_name"].lower()
         counties = ", ".join(region["counties"]).lower()
         code = region["cbsa_code"]
         if re.search(rf"\b{re.escape(code)}\b", question):
             return code
-        for token in tokens:
-            if len(token) >= 3 and (token in name or token in counties):
-                return code
-    return "default"
+        score = _count_location_matches(tokens, name, counties)
+        if score > best_score:
+            best_score = score
+            best_code = code
+    return best_code if best_score > 0 else "default"

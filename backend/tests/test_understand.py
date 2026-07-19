@@ -50,16 +50,16 @@ def test_calculator_with_mtsp_corpus():
         json={
             "annual_income": 55000,
             "household_size": 3,
-            "county_or_cbsa": "12086",
+            "county_or_cbsa": "12060",
         },
     )
     assert resp.status_code == 200
     data = resp.json()
     assert data["annual_income"] == 55000
     assert data["household_size"] == 3
-    assert data["income_limit_30"] == 43350
-    assert data["income_limit_50"] == 72250
-    assert data["income_limit_60"] == 80500
+    assert data["income_limit_30"] == 31830
+    assert data["income_limit_50"] == 53050
+    assert data["income_limit_60"] == 63660
     assert data["ami_percentage"] is not None
     assert data["source_url"] == "https://www.huduser.gov/portal/datasets/mtsp.html"
     assert data["effective_date"] == "2026-05-01"
@@ -81,7 +81,7 @@ def test_calculator_from_profile():
     data = resp.json()
     assert data["annual_income"] == 60000
     assert data["household_size"] == 2
-    assert data["income_limit_30"] == 41300
+    assert data["income_limit_30"] == 29160
     assert "Chicago" in "\n".join(data["formula_steps"])
 
 

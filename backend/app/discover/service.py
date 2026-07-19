@@ -13,26 +13,37 @@ class LIHTCService:
         self._properties: list[dict] = []
         self._load()
 
+    def _safe_int(self, row: dict, col: str, default: int = 0) -> int:
+        try:
+            v = row.get(col, "")
+            return int(float(v)) if v and str(v).strip() else default
+        except (ValueError, TypeError):
+            return default
+
     def _load(self):
         if not LIHTC_FILE.exists():
             return
         with open(LIHTC_FILE, encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
+                cbsa = row.get("cbsa_code", "").strip()
+                if not cbsa:
+                    continue
+
                 bedroom_mix = {
-                    "0": int(row["bedroom_studio"]),
-                    "1": int(row["bedroom_1br"]),
-                    "2": int(row["bedroom_2br"]),
-                    "3": int(row["bedroom_3br"]),
+                    "0": self._safe_int(row, "bedroom_studio"),
+                    "1": self._safe_int(row, "bedroom_1br"),
+                    "2": self._safe_int(row, "bedroom_2br"),
+                    "3": self._safe_int(row, "bedroom_3br"),
                 }
                 self._properties.append({
-                    "property_name": row["property_name"],
-                    "address": row["address"],
-                    "cbsa_code": row["cbsa_code"],
-                    "total_units": int(row["total_units"]),
-                    "low_income_units": int(row["low_income_units"]),
+                    "property_name": row.get("property_name", ""),
+                    "address": row.get("address", ""),
+                    "cbsa_code": cbsa,
+                    "total_units": self._safe_int(row, "total_units"),
+                    "low_income_units": self._safe_int(row, "low_income_units"),
                     "bedroom_mix": bedroom_mix,
-                    "year_placed_in_service": int(row["year_placed_in_service"]),
+                    "year_placed_in_service": self._safe_int(row, "year_placed_in_service"),
                     "data_coverage_note": DATA_COVERAGE_NOTE,
                 })
 

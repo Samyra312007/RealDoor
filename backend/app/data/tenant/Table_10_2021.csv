@@ -1,0 +1,66 @@
+TABLE_10:_GROSS_RENT_AS_PERCENTAGE_OF_ANNUAL_HOUSEHOLD_INCOME
+""
+State
+Alabama
+Alaska
+Arizona
+Arkansas
+California
+Colorado
+Connecticut
+Delaware
+District of Columbia
+Florida
+Georgia
+Guam
+Hawaii
+Idaho
+Illinois
+Indiana
+Iowa
+Kansas
+Kentucky3
+Louisiana
+Maine
+Maryland
+Massachusetts
+Michigan
+Minnesota
+Mississippi
+Missouri
+Montana3
+N. Mariana Islands
+Nebraska
+Nevada
+New Hampshire
+New Jersey
+New Mexico
+New York
+North Carolina
+North Dakota3
+Ohio
+Oklahoma
+Oregon
+Pennsylvania
+Puerto Rico
+Rhode Island
+South Carolina
+South Dakota
+Tennessee
+Texas
+U.S. Virgin Islands
+Utah3
+Vermont
+Virginia
+Washington
+West Virginia
+Wisconsin
+Wyoming
+Total
+""
+HERA = Housing and Economic Recovery Act. LIHTC = low-income housing tax credit. PIS = LIHTC properties placed in service database. 
+""
+"1 Includes only households with income certified in 2019, 2020 or 2021. "
+2 Ratio of 'Tenant Paid Rent' to 'Household Income' could not be calculated because 'Total Annual Household Income' equals $0.
+"3 The reported income for nearly all tenants in Montana, North Dakota and Utah was $1, which is not consistent with previously reported data.  "
+Rent for all households in Kentucky was reported as $0.
