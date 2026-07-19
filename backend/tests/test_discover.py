@@ -120,3 +120,4 @@ def test_health_includes_new_modules():
     data = resp.json()
     assert data["guardrails"]["discover_stretch"] == "active"
     assert data["guardrails"]["fmr_context"] == "active"
+    assert data["guardrails"]["qct_dda_context"] == "active"
