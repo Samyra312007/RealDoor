@@ -68,6 +68,12 @@ export const api = {
       }),
     }),
 
+  deleteField: (token: string, fieldName: string) =>
+    request<{ status: string; field: string }>(
+      `/confirm/field/${fieldName}?session_token=${encodeURIComponent(token)}`,
+      { method: "DELETE" }
+    ),
+
   updateProfile: (profile: any) =>
     request<any>("/confirm/profile", {
       method: "PUT",

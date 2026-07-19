@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSessionContext } from "@/lib/session-context";
 import { Button } from "@/components/ui/button";
 import { LedgerStamp } from "@/components/ui/ledger-stamp";
-import { Upload, FileText, CheckCircle2, AlertCircle, HelpCircle, Eye, ChevronRight, SkipForward, ArrowRight } from "lucide-react";
+import { Upload, FileText, CheckCircle2, AlertCircle, HelpCircle, Eye, ChevronRight, SkipForward, ArrowRight, Trash2 } from "lucide-react";
 
 const FIELD_LABELS: Record<string, string> = {
   full_name: "Full name",
@@ -104,6 +104,7 @@ function FieldRow({
   field,
   onConfirm,
   onSkip,
+  onDelete,
   index,
 }: {
   field: {
@@ -116,11 +117,13 @@ function FieldRow({
   };
   onConfirm: (fieldName: string, correctedValue?: string) => Promise<void>;
   onSkip: (fieldName: string) => Promise<void>;
+  onDelete: (fieldName: string) => Promise<void>;
   index: number;
 }) {
   const [draft, setDraft] = useState(field.value || "");
   const [confirming, setConfirming] = useState(false);
   const [justConfirmed, setJustConfirmed] = useState(false);
+  const [fieldError, setFieldError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!field.requires_confirmation) return;
@@ -134,12 +137,33 @@ function FieldRow({
 
   const handleConfirmClick = async () => {
     setConfirming(true);
+    setFieldError(null);
     try {
       await onConfirm(field.field_name, draft || undefined);
       setJustConfirmed(true);
       setTimeout(() => setJustConfirmed(false), 1500);
+    } catch (e: any) {
+      setFieldError(e?.message || "Could not confirm field");
     } finally {
       setConfirming(false);
+    }
+  };
+
+  const handleSkipClick = async () => {
+    setFieldError(null);
+    try {
+      await onSkip(field.field_name);
+    } catch (e: any) {
+      setFieldError(e?.message || "Could not skip field");
+    }
+  };
+
+  const handleDeleteClick = async () => {
+    setFieldError(null);
+    try {
+      await onDelete(field.field_name);
+    } catch (e: any) {
+      setFieldError(e?.message || "Could not delete field");
     }
   };
 
@@ -174,6 +198,13 @@ function FieldRow({
               <span className="stamp-enter font-mono text-2xs font-medium text-confirmed">Confirmed</span>
             )}
           </div>
+
+          {fieldError && (
+            <div role="alert" className="mb-2 flex items-center gap-1.5 fade-slide-in">
+              <AlertCircle className="h-3.5 w-3.5 shrink-0 text-expired" aria-hidden="true" />
+              <span className="font-sans text-xs text-expired">{fieldError}</span>
+            </div>
+          )}
 
           {showInput ? (
             <div className="flex items-center gap-2">
@@ -235,14 +266,32 @@ function FieldRow({
               <Button
                 size="sm"
                 variant="ghost"
-                onClick={() => onSkip(field.field_name)}
+                onClick={handleSkipClick}
                 aria-label={`Skip ${FIELD_LABELS[field.field_name] || field.field_name}`}
               >
                 <SkipForward className="h-3.5 w-3.5" aria-hidden="true" />
               </Button>
+              <button
+                onClick={handleDeleteClick}
+                className="inline-flex items-center justify-center rounded-sm p-1.5 text-ink/20 transition-colors hover:text-expired focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-expired"
+                aria-label={`Delete ${FIELD_LABELS[field.field_name] || field.field_name}`}
+                title="Remove this field"
+              >
+                <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+              </button>
             </>
           ) : isSkipped ? (
-            <LedgerStamp variant="skipped">Skipped</LedgerStamp>
+            <>
+              <LedgerStamp variant="skipped">Skipped</LedgerStamp>
+              <button
+                onClick={handleDeleteClick}
+                className="inline-flex items-center justify-center rounded-sm p-1.5 text-ink/20 transition-colors hover:text-expired focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-expired"
+                aria-label={`Delete ${FIELD_LABELS[field.field_name] || field.field_name}`}
+                title="Remove this field"
+              >
+                <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+              </button>
+            </>
           ) : (
             <LedgerStamp variant="confirmed">Confirmed</LedgerStamp>
           )}
@@ -255,7 +304,7 @@ function FieldRow({
 export function ProfilePage() {
   const {
     fields, extractLoading, extractError, uploads,
-    uploadDocument, confirmField, skipField, allConfirmed, needsReviewRef,
+    uploadDocument, confirmField, skipField, deleteField, allConfirmed, needsReviewRef,
   } = useSessionContext();
   const navigate = useNavigate();
 
@@ -263,6 +312,7 @@ export function ProfilePage() {
   const fileRef = useRef<HTMLInputElement>(null);
   const statusRef = useRef<HTMLDivElement>(null);
   const [announcement, setAnnouncement] = useState("");
+  const [actionError, setActionError] = useState<string | null>(null);
   const [uploadedCount, setUploadedCount] = useState(0);
 
   useEffect(() => {
@@ -317,13 +367,25 @@ export function ProfilePage() {
   };
 
   const handleConfirm = async (fieldName: string, correctedValue?: string) => {
+    setActionError(null);
     await confirmField(fieldName, correctedValue);
     setAnnouncement(`${FIELD_LABELS[fieldName] || fieldName} confirmed`);
   };
 
   const handleSkip = async (fieldName: string) => {
+    setActionError(null);
     await skipField(fieldName);
     setAnnouncement(`${FIELD_LABELS[fieldName] || fieldName} skipped`);
+  };
+
+  const handleDelete = async (fieldName: string) => {
+    setActionError(null);
+    try {
+      await deleteField(fieldName);
+      setAnnouncement(`${FIELD_LABELS[fieldName] || fieldName} removed`);
+    } catch (e: any) {
+      setActionError(e?.message || "Could not delete field");
+    }
   };
 
   const uploadZone = (
@@ -381,6 +443,13 @@ export function ProfilePage() {
         <div role="alert" className="mb-4 flex items-center gap-2 border border-expired/30 bg-expired/5 p-3 font-sans text-sm text-expired fade-slide-in">
           <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
           <span>{extractError}</span>
+        </div>
+      )}
+
+      {actionError && (
+        <div role="alert" className="mb-4 flex items-center gap-2 border border-expired/30 bg-expired/5 p-3 font-sans text-sm text-expired fade-slide-in">
+          <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
+          <span>{actionError}</span>
         </div>
       )}
 
@@ -483,6 +552,7 @@ export function ProfilePage() {
                           field={field}
                           onConfirm={handleConfirm}
                           onSkip={handleSkip}
+                          onDelete={handleDelete}
                           index={i}
                         />
                       </li>
@@ -499,6 +569,7 @@ export function ProfilePage() {
                         field={field}
                         onConfirm={handleConfirm}
                         onSkip={handleSkip}
+                        onDelete={handleDelete}
                         index={needsReviewFields.length + i}
                       />
                     </li>

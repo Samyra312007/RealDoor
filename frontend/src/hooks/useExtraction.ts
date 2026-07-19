@@ -102,6 +102,15 @@ export function useExtraction(token: string | null) {
     [token]
   );
 
+  const deleteField = useCallback(
+    async (fieldName: string) => {
+      if (!token) return;
+      await api.deleteField(token, fieldName);
+      setFields((prev) => prev.filter((f) => f.field_name !== fieldName));
+    },
+    [token]
+  );
+
   const allConfirmed = fields.length > 0 && fields.every((f) => !f.requires_confirmation);
   const needsReviewFields = fields.filter((f) => f.needs_review);
 
@@ -119,6 +128,7 @@ export function useExtraction(token: string | null) {
     uploadDocument,
     confirmField,
     skipField,
+    deleteField,
     setFields,
     allConfirmed,
     needsReviewFields,

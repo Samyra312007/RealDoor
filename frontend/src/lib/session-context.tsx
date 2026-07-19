@@ -16,6 +16,7 @@ type SessionContextValue = {
   uploadDocument: (file: File) => Promise<any>;
   confirmField: (fieldName: string, correctedValue?: string) => Promise<void>;
   skipField: (fieldName: string) => Promise<void>;
+  deleteField: (fieldName: string) => Promise<void>;
   allConfirmed: boolean;
   needsReviewRef: React.RefObject<HTMLDivElement | null>;
   answer: any;
@@ -41,6 +42,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     uploadDocument,
     confirmField,
     skipField,
+    deleteField,
     allConfirmed,
     needsReviewRef,
   } = useExtraction(token);
@@ -69,6 +71,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         uploadDocument,
         confirmField,
         skipField,
+        deleteField,
         allConfirmed,
         needsReviewRef,
         answer,
