@@ -83,8 +83,9 @@ def parse_field(text: str, field_name: str) -> Optional[dict]:
         matches = re.finditer(pattern, text, re.IGNORECASE | re.MULTILINE)
         for match in matches:
             value = _first_group_or_full(match)
-            context_before = text[max(0, match.start() - 40):match.start()]
-            source_snippet = (context_before + match.group(0)).strip()
+            context_before = text[max(0, match.start() - 60):match.start()]
+            context_after = text[match.end():match.end() + 60]
+            source_snippet = (context_before + match.group(0) + context_after).strip()
 
             confidence = base_conf
             if len(value) < 2:
@@ -114,7 +115,7 @@ def parse_field(text: str, field_name: str) -> Optional[dict]:
                 best = {
                     "value": value,
                     "confidence": round(confidence, 2),
-                    "source_snippet": source_snippet[:200],
+                    "source_snippet": source_snippet[:260],
                     "tag": tag,
                 }
 

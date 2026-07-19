@@ -20,6 +20,13 @@ def detect_document_type(text: str) -> DocumentType:
     return DocumentType.OTHER
 
 
+def _normalize_pdf_text(text: str) -> str:
+    text = re.sub(r"(\w)-\s*\n\s*(\w)", r"\1\2", text)
+    text = re.sub(r"[ \t]+", " ", text)
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return text.strip()
+
+
 def extract_text_from_bytes(content: bytes, filename: str) -> str:
     name_lower = filename.lower()
     if name_lower.endswith(".pdf"):
@@ -30,7 +37,8 @@ def extract_text_from_bytes(content: bytes, filename: str) -> str:
             for i, page in enumerate(reader.pages):
                 page_text = page.extract_text() or ""
                 pages.append(f"--- Page {i + 1} ---\n{page_text}")
-            return "\n\n".join(pages)
+            raw = "\n\n".join(pages)
+            return _normalize_pdf_text(raw)
         except Exception:
             return content.decode("latin-1", errors="replace")
     elif any(name_lower.endswith(ext) for ext in (".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp")):
@@ -47,12 +55,16 @@ def extract_text_from_bytes(content: bytes, filename: str) -> str:
 def get_page_number(text: str, snippet: str) -> Optional[int]:
     if not snippet:
         return None
+    snippet_pos = text.find(snippet[:50])
+    if snippet_pos == -1:
+        return None
+    last_page = None
     for match in re.finditer(r"--- Page (\d+) ---", text):
-        page_header_pos = match.start()
-        snippet_pos = text.find(snippet[:50])
-        if snippet_pos >= page_header_pos:
-            return int(match.group(1))
-    return 1
+        if match.start() <= snippet_pos:
+            last_page = int(match.group(1))
+        else:
+            break
+    return last_page or 1
 
 
 def process_document(content: bytes, filename: str) -> ExtractionResult:
