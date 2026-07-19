@@ -40,6 +40,8 @@ function AppShell() {
 
   return (
     <div className="flex min-h-screen flex-col bg-paper">
+      <div className="paper-texture pointer-events-none fixed inset-0 z-[-1] opacity-20" aria-hidden="true" />
+
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:border focus:border-brass focus:bg-paper focus:px-4 focus:py-2 focus:text-ink"
@@ -58,22 +60,24 @@ function AppShell() {
         <main id="main-content" className="min-w-0 flex-1 px-4 py-8 sm:px-6 lg:px-8">
           <h1 className="sr-only">RealDoor Application-Readiness Copilot</h1>
           <div className="mx-auto max-w-4xl">
-            <Routes>
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route
-                path="/understand"
-                element={canAccessStage(2) ? <UnderstandPage /> : <Navigate to="/profile" replace />}
-              />
-              <Route
-                path="/prepare"
-                element={canAccessStage(3) ? <PreparePage /> : <Navigate to="/profile" replace />}
-              />
-              <Route
-                path="/discover"
-                element={canAccessStage(4) ? <DiscoverPage /> : <Navigate to="/profile" replace />}
-              />
-              <Route path="*" element={<Navigate to="/profile" replace />} />
-            </Routes>
+            <div key={location.pathname} className="slide-up">
+              <Routes>
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route
+                  path="/understand"
+                  element={canAccessStage(2) ? <UnderstandPage /> : <Navigate to="/profile" replace />}
+                />
+                <Route
+                  path="/prepare"
+                  element={canAccessStage(3) ? <PreparePage /> : <Navigate to="/profile" replace />}
+                />
+                <Route
+                  path="/discover"
+                  element={canAccessStage(4) ? <DiscoverPage /> : <Navigate to="/profile" replace />}
+                />
+                <Route path="*" element={<Navigate to="/profile" replace />} />
+              </Routes>
+            </div>
           </div>
         </main>
       </div>

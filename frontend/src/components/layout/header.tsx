@@ -1,22 +1,28 @@
+import { ScrollText, Trash2 } from "lucide-react";
+
 export function Header({ onDelete }: { onDelete: () => void }) {
   return (
-    <header className="sticky top-0 z-50 border-b border-line bg-paper/95 backdrop-blur supports-[backdrop-filter]:bg-paper/60">
+    <header className="sticky top-0 z-50 border-b border-line bg-paper/90 backdrop-blur-md supports-[backdrop-filter]:bg-paper/70">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
-        <div className="flex items-center gap-2">
-          <span className="font-display text-xl font-semibold tracking-tight text-ink" aria-hidden="true">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-brass shadow-sm">
+            <ScrollText className="h-4 w-4 text-paper" aria-hidden="true" />
+          </div>
+          <span className="font-display text-base font-semibold tracking-tight text-ink">
             RealDoor
           </span>
-          <span className="hidden self-end pb-[3px] font-sans text-2xs text-ink/40 sm:inline">
+          <span className="hidden self-center font-sans text-2xs text-ink/30 sm:inline">
             Application-Readiness Copilot
           </span>
         </div>
         <nav aria-label="Session actions">
           <button
             onClick={onDelete}
-            className="rounded-sm border border-expired/30 px-3 py-1 font-sans text-xs text-expired hover:bg-expired/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-expired"
+            className="group inline-flex items-center gap-1.5 rounded-sm border border-expired/20 px-2.5 py-1.5 font-sans text-xs text-expired/70 transition-all hover:border-expired/40 hover:bg-expired/5 hover:text-expired focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-expired"
             aria-label="Delete my data and end session"
           >
-            Delete my data
+            <Trash2 className="h-3.5 w-3.5 transition-transform group-hover:scale-105" aria-hidden="true" />
+            <span className="hidden sm:inline">Delete my data</span>
           </button>
         </nav>
       </div>

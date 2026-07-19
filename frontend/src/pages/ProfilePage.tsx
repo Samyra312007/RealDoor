@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSessionContext } from "@/lib/session-context";
 import { Button } from "@/components/ui/button";
 import { LedgerStamp } from "@/components/ui/ledger-stamp";
-import { Upload, FileText, CheckCircle2, AlertCircle, HelpCircle, Eye, ChevronRight, SkipForward } from "lucide-react";
+import { Upload, FileText, CheckCircle2, AlertCircle, HelpCircle, Eye, ChevronRight, SkipForward, ArrowRight } from "lucide-react";
 
 const FIELD_LABELS: Record<string, string> = {
   full_name: "Full name",
@@ -33,9 +33,11 @@ const FIELD_ORDER = [
 function FileCaseTab({
   upload,
   needsReview,
+  index,
 }: {
   upload: { file: File; status: string; error?: string };
   needsReview: boolean;
+  index: number;
 }) {
   const isPending = upload.status === "pending";
   const isUploading = upload.status === "uploading";
@@ -56,7 +58,7 @@ function FileCaseTab({
   }
 
   return (
-    <div className="border border-line" role="listitem">
+    <div className="slide-up border border-line" style={{ animationDelay: `${index * 50}ms` }}>
       <div className="flex items-center gap-3 px-3 py-2">
         <FileText className="h-3.5 w-3.5 shrink-0 text-ink/30" aria-hidden="true" />
         <span className="flex-1 truncate font-sans text-sm text-ink/80">{upload.file.name}</span>
@@ -66,8 +68,7 @@ function FileCaseTab({
       </div>
       <div className="h-0.5 bg-line/50">
         <div
-          className={`h-full ${isUploading || isPending ? "w-2/3 bg-brass" : isDone ? "w-full bg-confirmed" : isError ? "w-full bg-expired" : "w-0"}`}
-          style={isUploading || isPending ? { animation: "shimmer 1.5s ease-in-out infinite" } : undefined}
+          className={`h-full ${isUploading || isPending ? "shimmer-bar" : isDone ? `w-full ${needsReview ? "bg-review" : "bg-confirmed"}` : isError ? "w-full bg-expired" : "w-0"}`}
         />
       </div>
     </div>
@@ -103,6 +104,7 @@ function FieldRow({
   field,
   onConfirm,
   onSkip,
+  index,
 }: {
   field: {
     field_name: string;
@@ -114,9 +116,11 @@ function FieldRow({
   };
   onConfirm: (fieldName: string, correctedValue?: string) => Promise<void>;
   onSkip: (fieldName: string) => Promise<void>;
+  index: number;
 }) {
   const [draft, setDraft] = useState(field.value || "");
   const [confirming, setConfirming] = useState(false);
+  const [justConfirmed, setJustConfirmed] = useState(false);
 
   useEffect(() => {
     if (!field.requires_confirmation) return;
@@ -132,6 +136,8 @@ function FieldRow({
     setConfirming(true);
     try {
       await onConfirm(field.field_name, draft || undefined);
+      setJustConfirmed(true);
+      setTimeout(() => setJustConfirmed(false), 1500);
     } finally {
       setConfirming(false);
     }
@@ -146,44 +152,50 @@ function FieldRow({
 
   return (
     <div
-      className={`border p-4 transition-colors ${
-        field.needs_review && field.requires_confirmation
-          ? "border-review"
+      className={`slide-up border p-4 transition-all ${
+        justConfirmed
+          ? "border-confirmed/40 bg-confirmed/[0.02]"
+          : field.needs_review && field.requires_confirmation
+          ? "border-review bg-review/[0.02]"
           : isConfirmed
-          ? "border-confirmed/30"
+          ? "border-confirmed/20"
           : "border-line"
       }`}
+      style={{ animationDelay: `${index * 60}ms` }}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
-            <div className="mb-1 flex items-center gap-2">
-              <label htmlFor={`field-${field.field_name}`} className="font-sans text-xs font-medium uppercase tracking-wider text-ink/50">
-                {FIELD_LABELS[field.field_name] || field.field_name.replace(/_/g, " ")}
-              </label>
-              <ConfidenceBadge confidence={field.confidence} />
-            </div>
+          <div className="mb-1 flex items-center gap-2">
+            <label htmlFor={`field-${field.field_name}`} className="font-sans text-xs font-medium uppercase tracking-wider text-ink/50">
+              {FIELD_LABELS[field.field_name] || field.field_name.replace(/_/g, " ")}
+            </label>
+            <ConfidenceBadge confidence={field.confidence} />
+            {justConfirmed && (
+              <span className="stamp-enter font-mono text-2xs font-medium text-confirmed">Confirmed</span>
+            )}
+          </div>
 
-            {showInput ? (
-              <div className="flex items-center gap-2">
-                <div className="flex-1">
-                  <input
-                    id={`field-${field.field_name}`}
-                    type={isNumeric ? "text" : "text"}
-                    value={draft}
-                    onChange={(e) => setDraft(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder={
-                      field.confidence < 0.7
-                        ? "Needs your input \u2014 not found in document"
-                        : "Edit value if needed"
-                    }
-                    className={`w-full rounded-sm border bg-paper px-3 py-1.5 font-sans text-sm text-ink placeholder:text-ink/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass ${
-                      field.needs_review ? "border-review" : "border-line"
-                    } ${isNumeric ? "font-mono" : ""}`}
-                    autoComplete="off"
-                  />
-                </div>
+          {showInput ? (
+            <div className="flex items-center gap-2">
+              <div className="flex-1">
+                <input
+                  id={`field-${field.field_name}`}
+                  type={isNumeric ? "text" : "text"}
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder={
+                    field.confidence < 0.7
+                      ? "Needs your input \u2014 not found in document"
+                      : "Edit value if needed"
+                  }
+                  className={`w-full rounded-sm border bg-paper px-3 py-1.5 font-sans text-sm text-ink placeholder:text-ink/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass ${
+                    field.needs_review ? "border-review" : "border-line"
+                  } ${isNumeric ? "font-mono" : ""}`}
+                  autoComplete="off"
+                />
               </div>
+            </div>
           ) : (
             <p className={`font-sans text-sm ${isNumeric ? "font-mono" : ""} ${
               isSkipped ? "text-ink/40 italic" : "text-ink"
@@ -193,12 +205,12 @@ function FieldRow({
           )}
 
           {field.source_snippet && (
-            <details className="mt-1.5">
+            <details className="mt-1.5 group">
               <summary className="inline-flex cursor-pointer items-center gap-1 font-mono text-2xs text-ink/40 hover:text-ink/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass rounded">
-                <Eye className="h-3 w-3" aria-hidden="true" />
+                <Eye className="h-3 w-3 transition-transform group-open:rotate-12" aria-hidden="true" />
                 <span>Show source</span>
               </summary>
-              <div className="mt-1.5 border border-line bg-line/20 p-2">
+              <div className="animate-receipt-print mt-1.5 border border-line bg-line/20 p-2">
                 <p className="font-mono text-2xs leading-relaxed text-ink/60 whitespace-pre-wrap">
                   {field.source_snippet}
                 </p>
@@ -251,6 +263,7 @@ export function ProfilePage() {
   const fileRef = useRef<HTMLInputElement>(null);
   const statusRef = useRef<HTMLDivElement>(null);
   const [announcement, setAnnouncement] = useState("");
+  const [uploadedCount, setUploadedCount] = useState(0);
 
   useEffect(() => {
     if (announcement) {
@@ -258,6 +271,10 @@ export function ProfilePage() {
       return () => clearTimeout(timer);
     }
   }, [announcement]);
+
+  useEffect(() => {
+    if (uploads.length > 0) setUploadedCount(uploads.length);
+  }, [uploads.length]);
 
   const sorted = [...fields].sort(
     (a, b) => FIELD_ORDER.indexOf(a.field_name) - FIELD_ORDER.indexOf(b.field_name)
@@ -274,6 +291,7 @@ export function ProfilePage() {
   const hasUploads = uploads.length > 0;
   const hasFields = fields.length > 0;
   const anyUploadNeedsReview = uploads.some((u) => u.status === "done") && needsReviewFields.length > 0;
+  const progressPct = totalFields > 0 ? Math.round((confirmedOrSkippedCount / totalFields) * 100) : 0;
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -314,9 +332,9 @@ export function ProfilePage() {
       tabIndex={extractLoading ? -1 : 0}
       aria-label="Upload documents. Drag and drop or click to select."
       aria-disabled={extractLoading}
-      className={`flex cursor-pointer flex-col items-center justify-center border-2 border-dashed border-line p-8 transition-colors
+      className={`flex cursor-pointer flex-col items-center justify-center border-2 border-dashed p-10 transition-all
         ${extractLoading ? "pointer-events-none opacity-50" : ""}
-        ${dragOver ? "border-brass bg-brass/5" : "hover:border-brass/50"}
+        ${dragOver ? "border-brass bg-brass/5 scale-[1.02]" : "border-line hover:border-brass/50 hover:bg-brass/[0.02]"}
       `}
       onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
       onDragLeave={() => setDragOver(false)}
@@ -336,9 +354,11 @@ export function ProfilePage() {
         aria-hidden="true"
         disabled={extractLoading}
       />
-      <Upload className="mb-3 h-8 w-8 text-ink/20" aria-hidden="true" />
+      <div className={`mb-4 rounded-full p-3 transition-all ${dragOver ? "bg-brass/10 scale-110" : "bg-line/30"}`}>
+        <Upload className={`h-8 w-8 transition-colors ${dragOver ? "text-brass" : "text-ink/20"}`} aria-hidden="true" />
+      </div>
       <p className="font-sans text-sm font-medium text-ink/70">
-        {extractLoading ? "Uploading\u2026" : "Drop your documents here, or click to browse"}
+        {extractLoading ? "Uploading\u2026" : dragOver ? "Drop your documents here" : "Drop your documents here, or click to browse"}
       </p>
       <p className="mt-1 font-sans text-2xs text-ink/40">PDF, PNG, or JPEG \u2014 up to 10 MB each</p>
     </div>
@@ -347,10 +367,10 @@ export function ProfilePage() {
   return (
     <section aria-labelledby="profile-heading">
       <h2 id="profile-heading" className="mb-1 font-display text-xl font-semibold text-ink">
-        Stage 01 \u2014 Profile
+        Stage 01 <span className="text-brass">/</span> Profile
       </h2>
       <p className="mb-6 font-sans text-sm text-ink/50">
-        Upload your documents. We\u2019ll extract the information. You confirm or correct each field.
+        Upload your documents. We&rsquo;ll extract the information. You confirm or correct each field.
       </p>
 
       <div ref={statusRef} aria-live="polite" className="sr-only">
@@ -358,7 +378,7 @@ export function ProfilePage() {
       </div>
 
       {extractError && (
-        <div role="alert" className="mb-4 flex items-center gap-2 border border-expired/30 bg-expired/5 p-3 font-sans text-sm text-expired">
+        <div role="alert" className="mb-4 flex items-center gap-2 border border-expired/30 bg-expired/5 p-3 font-sans text-sm text-expired fade-slide-in">
           <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
           <span>{extractError}</span>
         </div>
@@ -400,25 +420,22 @@ export function ProfilePage() {
             <ul className="space-y-2" role="list" aria-label="Uploaded files">
               {uploads.map((u, i) => (
                 <li key={i}>
-                  <FileCaseTab upload={u} needsReview={anyUploadNeedsReview} />
+                  <FileCaseTab upload={u} needsReview={anyUploadNeedsReview} index={i} />
                 </li>
               ))}
             </ul>
           </div>
 
           {extractLoading && (
-            <div className="border border-line bg-line/20 p-4">
+            <div className="border border-line bg-line/20 p-4 fade-slide-in">
               <p className="font-sans text-sm text-ink/60">
-                We\u2019re reading your document\u2026
+                We&rsquo;re reading your document&hellip;
               </p>
-              <div className="mt-2 h-0.5 bg-line/50">
-                <div
-                  className="h-full w-2/3 bg-brass"
-                  style={{ animation: "shimmer 1.5s ease-in-out infinite" }}
-                />
+              <div className="mt-2 h-1 bg-line/50">
+                <div className="shimmer-bar h-full w-3/4" />
               </div>
               <p className="mt-2 font-mono text-2xs text-ink/30">
-                Extracting fields \u2014 this may take a moment
+                Extracting fields &mdash; this may take a moment
               </p>
             </div>
           )}
@@ -430,14 +447,20 @@ export function ProfilePage() {
           )}
           {hasFields && (
             <div>
-              <div className="mb-1 flex items-center gap-2">
+              <div className="mb-2 flex items-center gap-3">
                 <p className="font-sans text-xs font-medium uppercase tracking-wider text-ink/40">
                   Extracted fields
                 </p>
+                <span className="font-mono text-2xs text-ink/30">
+                  {confirmedOrSkippedCount} of {totalFields} done
+                </span>
                 {totalFields > 0 && (
-                  <span className="font-mono text-2xs text-ink/30">
-                    {confirmedOrSkippedCount} of {totalFields} done
-                  </span>
+                  <div className="ml-auto flex h-1.5 flex-1 max-w-[120px] overflow-hidden rounded-full bg-line/50">
+                    <div
+                      className="h-full rounded-full bg-confirmed transition-all duration-500"
+                      style={{ width: `${progressPct}%` }}
+                    />
+                  </div>
                 )}
               </div>
 
@@ -446,7 +469,7 @@ export function ProfilePage() {
                   ref={needsReviewRef}
                   className="mb-4 space-y-3"
                 >
-                  <div className="flex items-center gap-2 border border-review/30 bg-review/5 px-3 py-2">
+                  <div className="flex items-center gap-2 border border-review/30 bg-review/5 px-3 py-2 fade-slide-in">
                     <Eye className="h-4 w-4 shrink-0 text-review" aria-hidden="true" />
                     <p className="font-sans text-xs text-review">
                       Needs your input &mdash; <span className="font-medium">{needsReviewFields.length} field{needsReviewFields.length > 1 ? "s" : ""}</span>{" "}
@@ -454,12 +477,13 @@ export function ProfilePage() {
                     </p>
                   </div>
                   <ul className="space-y-2" role="list">
-                    {needsReviewFields.map((field) => (
+                    {needsReviewFields.map((field, i) => (
                       <li key={field.field_name}>
                         <FieldRow
                           field={field}
                           onConfirm={handleConfirm}
                           onSkip={handleSkip}
+                          index={i}
                         />
                       </li>
                     ))}
@@ -469,12 +493,13 @@ export function ProfilePage() {
 
               {otherFields.length > 0 && (
                 <ul className="space-y-2" role="list">
-                  {otherFields.map((field) => (
+                  {otherFields.map((field, i) => (
                     <li key={field.field_name}>
                       <FieldRow
                         field={field}
                         onConfirm={handleConfirm}
                         onSkip={handleSkip}
+                        index={needsReviewFields.length + i}
                       />
                     </li>
                   ))}
@@ -486,12 +511,24 @@ export function ProfilePage() {
       )}
 
       {hasFields && (
-        <div className="sticky bottom-0 z-10 -mx-4 mt-8 border-t border-line bg-paper px-4 py-3 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+        <div className="sticky bottom-0 z-10 -mx-4 mt-8 border-t border-line bg-paper/95 backdrop-blur-sm px-4 py-3 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
           <div className="mx-auto flex max-w-4xl items-center justify-between">
-            <p className="font-sans text-sm text-ink/60">
-              <span className="font-medium text-ink/80">{confirmedOrSkippedCount}</span> of{" "}
-              <span className="font-medium text-ink/80">{totalFields}</span> fields confirmed
-            </p>
+            <div className="flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full border border-line">
+                <span className="font-mono text-xs font-medium text-ink">{confirmedOrSkippedCount}</span>
+              </div>
+              <span className="font-sans text-sm text-ink/50">
+                of <span className="font-medium text-ink/80">{totalFields}</span> fields confirmed
+              </span>
+              {!allConfirmed && progressPct > 0 && (
+                <div className="hidden h-1.5 w-20 overflow-hidden rounded-full bg-line/50 sm:block">
+                  <div
+                    className="h-full rounded-full bg-brass transition-all duration-500"
+                    style={{ width: `${progressPct}%` }}
+                  />
+                </div>
+              )}
+            </div>
             <div className="flex items-center gap-3">
               {!allConfirmed && (
                 <p className="hidden font-sans text-xs text-review sm:block">
@@ -502,22 +539,15 @@ export function ProfilePage() {
                 variant="primary"
                 onClick={() => navigate("/understand")}
                 disabled={!allConfirmed}
+                className="group"
               >
                 Continue to Understand
-                <ChevronRight className="ml-1 h-4 w-4" aria-hidden="true" />
+                <ArrowRight className="ml-1.5 h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
               </Button>
             </div>
           </div>
         </div>
       )}
-
-      <style>{`
-        @keyframes shimmer {
-          0% { opacity: 0.4; }
-          50% { opacity: 1; }
-          100% { opacity: 0.4; }
-        }
-      `}</style>
     </section>
   );
 }

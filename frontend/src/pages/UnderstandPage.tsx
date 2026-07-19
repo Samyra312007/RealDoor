@@ -3,7 +3,7 @@ import { useSessionContext } from "@/lib/session-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LedgerStamp } from "@/components/ui/ledger-stamp";
-import { HelpCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { HelpCircle, ChevronDown, ChevronUp, MessageSquare, Calculator, ScrollText, Search } from "lucide-react";
 
 const EXAMPLE_QUESTIONS = [
   "What\u2019s the income limit for a 3-person household?",
@@ -60,11 +60,12 @@ function QAPanel({
 
   return (
     <div className="space-y-4">
+      <div className="flex items-center gap-2 border-b border-line pb-3">
+        <MessageSquare className="h-4 w-4 text-brass" aria-hidden="true" />
+        <h3 className="font-display text-base font-semibold text-ink">Ask about the rules</h3>
+      </div>
+
       <div className="space-y-3">
-        <label htmlFor="qa-input" className="block font-display text-base font-semibold text-ink">
-          Ask about the rules
-        </label>
-        <p className="font-sans text-xs text-ink/50">for your area</p>
         <div className="flex gap-2">
           <div className="flex-1">
             <input
@@ -91,17 +92,17 @@ function QAPanel({
               key={q}
               onClick={() => handleChip(q)}
               disabled={loading}
-              className="rounded-sm border border-line px-2.5 py-1 font-sans text-2xs text-ink/50 transition-colors hover:border-brass/50 hover:text-ink/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass disabled:opacity-40"
+              className="group rounded-sm border border-line px-2.5 py-1 font-sans text-2xs text-ink/50 transition-all hover:border-brass/50 hover:text-ink/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass disabled:opacity-40"
             >
+              <Search className="mr-1 inline h-3 w-3 text-ink/20 transition-colors group-hover:text-brass/50" aria-hidden="true" />
               {q}
             </button>
           ))}
         </div>
       </div>
 
-      {/* REFUSAL CARD — ochre left border, not red */}
       {isRefusal && (
-        <div className="border-l-2 border-review bg-review/5 p-4" role="alert">
+        <div className="fade-slide-in border-l-2 border-review bg-review/5 p-4" role="alert">
           <p className="font-sans text-sm leading-relaxed text-ink">
             {REFUSAL_MESSAGE}
           </p>
@@ -114,7 +115,7 @@ function QAPanel({
             <span>{showWhy ? "Hide" : "Why?"}</span>
           </button>
           {showWhy && (
-            <p className="mt-2 font-mono text-2xs leading-relaxed text-ink/50">
+            <p className="animate-receipt-print mt-2 font-mono text-2xs leading-relaxed text-ink/50">
               RealDoor extracts, explains, calculates, and prepares \u2014 it never decides.
               Deterministic math and rule retrieval help you understand your situation,
               but only a housing program official can determine eligibility.
@@ -123,15 +124,14 @@ function QAPanel({
         </div>
       )}
 
-      {/* ABSTRACTION — same weight as a real answer, not an error */}
       {isAbstention && (
-        <div className="border border-line p-4">
+        <div className="fade-slide-in border border-line p-4">
           <div className="flex items-center gap-2">
             <HelpCircle className="h-4 w-4 text-ink/40" aria-hidden="true" />
             <LedgerStamp variant="default">Abstained</LedgerStamp>
           </div>
           <p className="mt-2 font-sans text-sm leading-relaxed text-ink/60">
-            I don\u2019t have enough information to answer that. Try rephrasing your question.
+            I don&rsquo;t have enough information to answer that. Try rephrasing your question.
           </p>
           {answer.citations?.length > 0 && (
             <div className="mt-3 border-t border-dotted border-line pt-2">
@@ -146,9 +146,8 @@ function QAPanel({
         </div>
       )}
 
-      {/* NORMAL ANSWER with receipt-tape citation strip */}
       {hasAnswer && !loading && (
-        <div role="status" aria-live="polite" className="border border-line p-4">
+        <div role="status" aria-live="polite" className="fade-slide-in border border-line p-4">
           <p className="font-sans text-sm leading-relaxed text-ink">{answer.answer}</p>
           {answer.citations?.length > 0 && (
             <div className="mt-4">
@@ -169,8 +168,8 @@ function QAPanel({
       {loading && (
         <div className="border border-line bg-line/20 p-4">
           <div className="flex items-center gap-2">
-            <div className="h-3 w-3 animate-pulse rounded-full bg-brass" />
-            <p className="font-sans text-sm text-ink/50">Looking that up\u2026</p>
+            <div className="pulse-dot h-3 w-3 rounded-full bg-brass" />
+            <p className="font-sans text-sm text-ink/50">Looking that up&hellip;</p>
           </div>
         </div>
       )}
@@ -225,7 +224,6 @@ function CalculatorPanel({
     }
   };
 
-  // Parse formula steps into structured display
   const steps = calcResult?.formula_steps || [];
   const incomeLine = steps.find((s: string) => s.startsWith("Confirmed annual income:"));
   const hhLine = steps.find((s: string) => s.startsWith("Household size:"));
@@ -238,16 +236,20 @@ function CalculatorPanel({
 
   return (
     <div className="space-y-4">
-      <h3 className="font-display text-base font-semibold text-ink">Income calculator</h3>
+      <div className="flex items-center gap-2 border-b border-line pb-3">
+        <Calculator className="h-4 w-4 text-brass" aria-hidden="true" />
+        <h3 className="font-display text-base font-semibold text-ink">Income calculator</h3>
+      </div>
 
       {hasProfileData && (
         <Button
           onClick={handleProfileCalc}
           disabled={calcLoading}
-          className="w-full"
+          className="w-full group"
           variant="primary"
           aria-busy={calcLoading}
         >
+          <ScrollText className="mr-2 h-4 w-4" aria-hidden="true" />
           {calcLoading ? "Calculating\u2026" : "Calculate from confirmed profile"}
         </Button>
       )}
@@ -292,21 +294,19 @@ function CalculatorPanel({
         </Button>
       </div>
 
-      {/* FORMULA TRACE — receipt-style */}
       {calcResult && !calcLoading && (
         <div role="status" aria-live="polite" className="sr-only">
           Calculation complete. AMI percentage: {typeof calcResult.ami_percentage === "number" ? calcResult.ami_percentage.toFixed(1) : calcResult.ami_percentage}%.
         </div>
       )}
       {calcResult && !calcLoading && (
-        <div className="border border-line bg-paper">
+        <div className="fade-slide-in border border-line bg-paper">
           <div className="p-4 pb-3">
             <LedgerStamp variant="brass" className="mb-3">
               Formula trace
             </LedgerStamp>
 
             <div className="space-y-1.5 font-mono text-sm text-ink">
-              {/* Income line */}
               {incomeLine && (
                 <div className="flex justify-between">
                   <span className="text-ink/50">Your income</span>
@@ -316,7 +316,6 @@ function CalculatorPanel({
                 </div>
               )}
 
-              {/* Household size */}
               {hhLine && (
                 <div className="flex justify-between text-ink/50">
                   <span>Household size</span>
@@ -324,9 +323,8 @@ function CalculatorPanel({
                 </div>
               )}
 
-              {/* AMI threshold (from the percentage line or AMI line) */}
               {amiLine && (
-                <div className="flex justify-between pt-2 border-t border-line/50">
+                <div className="flex justify-between border-t border-line/50 pt-2">
                   <span className="text-ink/50">AMI 60% threshold</span>
                   <span className="font-medium">
                     {limit60
@@ -338,18 +336,16 @@ function CalculatorPanel({
                 </div>
               )}
 
-              {/* Region */}
               {regionLine && (
                 <p className="text-2xs text-ink/40">
                   {regionLine.replace("Metro area: ", "")}
                 </p>
               )}
 
-              {/* Percentage result — prominent */}
               {calcResult.ami_percentage !== undefined && (
-                <div className="flex justify-between items-baseline pt-2 border-t border-line/50">
+                <div className="flex items-baseline justify-between border-t border-line/50 pt-2">
                   <span className="font-mono text-xs text-ink/50">AMI percentage</span>
-                  <span className="font-mono text-xl font-semibold text-brass">
+                  <span className="animate-counter-up font-mono text-xl font-semibold text-brass">
                     {typeof calcResult.ami_percentage === "number"
                       ? calcResult.ami_percentage.toFixed(1)
                       : calcResult.ami_percentage}%
@@ -357,9 +353,8 @@ function CalculatorPanel({
                 </div>
               )}
 
-              {/* Full formula derivation */}
               {pctLine && (
-                <details className="mt-2">
+                <details className="mt-2 group">
                   <summary className="cursor-pointer font-mono text-2xs text-ink/30 hover:text-ink/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass rounded">
                     Show derivation
                   </summary>
@@ -369,9 +364,8 @@ function CalculatorPanel({
                 </details>
               )}
 
-              {/* Limit tiers */}
               {(limit30 || limit50 || limit60) && (
-                <div className="grid grid-cols-3 gap-2 pt-2 border-t border-line/50">
+                <div className="grid grid-cols-3 gap-2 border-t border-line/50 pt-2">
                   {limit30 && (
                     <div>
                       <p className="font-mono text-2xs text-ink/30">30%</p>
@@ -401,7 +395,6 @@ function CalculatorPanel({
             </div>
           </div>
 
-          {/* RECEIPT-TAPE FOOTER */}
           <div className="border-t border-dotted border-line px-4 py-3">
             <ReceiptTear className="mb-2" />
             <p className="font-mono text-2xs uppercase tracking-wider text-ink/30">
@@ -410,7 +403,6 @@ function CalculatorPanel({
             </p>
           </div>
 
-          {/* EXPLAIN THIS CALCULATION */}
           <div className="border-t border-line">
             <button
               onClick={handleExplain}
@@ -421,9 +413,9 @@ function CalculatorPanel({
               {explainOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
             </button>
             {explainOpen && (
-              <div className="border-t border-line px-4 py-3">
+              <div className="animate-receipt-print border-t border-line px-4 py-3">
                 {explaining ? (
-                  <p className="font-mono text-2xs text-ink/40">Loading explanation\u2026</p>
+                  <p className="font-mono text-2xs text-ink/40">Loading explanation&hellip;</p>
                 ) : explanation ? (
                   <pre className="font-mono text-2xs leading-relaxed text-ink/60 whitespace-pre-wrap">
                     {explanation}
@@ -431,8 +423,8 @@ function CalculatorPanel({
                 ) : (
                   <p className="font-mono text-2xs text-ink/40">
                     This formula shows how your annual income compares to the Area Median Income
-                    (AMI) for your household size and metro area, using HUD\u2019s MTSP 2026 tables.
-                    The math is deterministic \u2014 it doesn\u2019t judge or decide.
+                    (AMI) for your household size and metro area, using HUD&rsquo;s MTSP 2026 tables.
+                    The math is deterministic &mdash; it doesn&rsquo;t judge or decide.
                   </p>
                 )}
               </div>
@@ -494,7 +486,7 @@ export function UnderstandPage() {
   return (
     <section aria-labelledby="understand-heading">
       <h2 id="understand-heading" className="mb-1 font-display text-xl font-semibold text-ink">
-        Stage 02 \u2014 Understand
+        Stage 02 <span className="text-brass">/</span> Understand
       </h2>
       <p className="mb-6 font-sans text-sm text-ink/50">
         Ask questions about rental rules and calculate your income against program thresholds.

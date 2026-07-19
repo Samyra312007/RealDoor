@@ -6,7 +6,7 @@ import { useDiscover, type Property } from "@/hooks/useDiscover";
 import { useSessionContext } from "@/lib/session-context";
 import {
   Building2, MapPin, Users, BedDouble, Calendar,
-  AlertCircle, Info,
+  AlertCircle, Info, Search, SlidersHorizontal,
 } from "lucide-react";
 
 const CBSA_OPTIONS: Record<string, string> = {
@@ -32,13 +32,16 @@ const BEDROOM_LABELS: Record<string, string> = {
   "3": "3 BR",
 };
 
-function PropertyCard({ property }: { property: Property }) {
+function PropertyCard({ property, index }: { property: Property; index: number }) {
   return (
-    <div className="flex flex-col gap-2 border border-line bg-paper p-4">
+    <div
+      className="slide-up group flex flex-col gap-2 border border-line bg-paper p-4 transition-all hover:-translate-y-0.5 hover:shadow-md card-lift corner-fold"
+      style={{ animationDelay: `${index * 80}ms` }}
+    >
       <div className="flex items-start justify-between">
         <div className="min-w-0 flex-1">
           <h4 className="flex items-center gap-1.5 font-sans text-sm font-semibold text-ink">
-            <Building2 className="h-4 w-4 shrink-0 text-brass" aria-hidden="true" />
+            <Building2 className="h-4 w-4 shrink-0 text-brass transition-colors group-hover:text-brass/80" aria-hidden="true" />
             {property.property_name}
           </h4>
           <p className="mt-0.5 flex items-center gap-1 font-mono text-2xs text-ink/50">
@@ -61,7 +64,7 @@ function PropertyCard({ property }: { property: Property }) {
         </span>
         <span className="inline-flex items-center gap-1">
           <Calendar className="h-3 w-3" aria-hidden="true" />
-          Built {property.year_placed_in_service}
+          {property.year_placed_in_service}
         </span>
       </div>
 
@@ -81,7 +84,7 @@ function PropertyCard({ property }: { property: Property }) {
       </div>
 
       <p className="mt-1 font-mono text-[10px] italic text-ink/40">
-        Location only \u2014 contact property for current availability
+        Location only &mdash; contact property for current availability
       </p>
     </div>
   );
@@ -118,23 +121,22 @@ export function DiscoverPage() {
   return (
     <section aria-labelledby="discover-heading">
       <h2 id="discover-heading" className="mb-1 font-display text-xl font-semibold text-ink">
-        Stage 04 \u2014 Discover Properties
+        Stage 04 <span className="text-brass">/</span> Discover Properties
       </h2>
       <p className="mb-6 font-sans text-sm text-ink/50">
         Browse LIHTC properties in your target metro area. All data is for location reference only.
         Contact properties directly for current availability, income limits, and application status.
       </p>
 
-      {/* Staleness banner — always visible, stamped notice, not dismissible */}
       <div
-        className="mb-6 border-2 border-brass/40 bg-brass/5 p-4"
+        className="mb-6 border-2 border-brass/40 bg-brass/5 p-4 fade-slide-in"
         role="status"
       >
         <div className="mb-2">
           <LedgerStamp variant="brass">HUD 2024</LedgerStamp>
         </div>
         <p className="font-sans text-sm leading-relaxed text-ink/70">
-          Data from HUD LIHTC through 2024 \u2014 contact properties
+          Data from HUD LIHTC through 2024 &mdash; contact properties
           for current availability and income limits.
         </p>
       </div>
@@ -146,13 +148,13 @@ export function DiscoverPage() {
         </div>
       )}
 
-      {/* Filter controls — renter-selected values only */}
       <div className="mb-6 border border-line bg-paper p-4">
-        <div className="mb-3">
+        <div className="mb-3 flex items-center gap-2">
+          <SlidersHorizontal className="h-4 w-4 text-brass" aria-hidden="true" />
           <h3 className="font-display text-base font-semibold text-ink">Filters</h3>
-          <p className="font-sans text-2xs text-ink/40">
-            All filters are your choice \u2014 the system never ranks or recommends
-          </p>
+          <span className="font-mono text-2xs text-ink/30">
+            All filters are your choice &mdash; the system never ranks or recommends
+          </span>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           <div>
@@ -218,18 +220,18 @@ export function DiscoverPage() {
             <Button
               onClick={handleSearch}
               disabled={loading}
-              className="w-full"
+              className="w-full group"
               aria-busy={loading}
             >
+              <Search className="mr-1.5 h-4 w-4" aria-hidden="true" />
               {loading ? "Searching\u2026" : "Search"}
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Result count */}
       {hasSearched && !loading && (
-        <div className="mb-4" role="status" aria-live="polite">
+        <div className="mb-4 slide-up" role="status" aria-live="polite">
           <span className="inline-flex items-center gap-1 border border-brass/30 px-2 py-0.5 font-mono text-2xs font-medium text-brass">
             <Building2 className="h-3 w-3" aria-hidden="true" />
             {totalCount} propert{totalCount === 1 ? "y" : "ies"} found
@@ -242,7 +244,8 @@ export function DiscoverPage() {
 
       {loading && (
         <div role="status" aria-live="polite" className="py-8 text-center">
-          <p className="font-sans text-sm text-ink/50">Loading properties\u2026</p>
+          <div className="pulse-dot mx-auto mb-3 h-4 w-4 rounded-full bg-brass" />
+          <p className="font-sans text-sm text-ink/50">Loading properties&hellip;</p>
         </div>
       )}
 
@@ -258,7 +261,7 @@ export function DiscoverPage() {
       {!loading && properties.length > 0 && (
         <div role="list" aria-label="Property list" className="grid gap-4 sm:grid-cols-2">
           {properties.map((p, i) => (
-            <PropertyCard key={`${p.property_name}-${i}`} property={p} />
+            <PropertyCard key={`${p.property_name}-${i}`} property={p} index={i} />
           ))}
         </div>
       )}
