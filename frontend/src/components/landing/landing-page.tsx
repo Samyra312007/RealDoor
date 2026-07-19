@@ -265,7 +265,7 @@ function DesignPrincipleSection() {
 
 function TechFooter() {
   return (
-    <footer className="border-t border-line bg-paper px-4 py-8 text-center">
+    <footer className="relative border-t border-line bg-paper px-4 py-8 text-center">
       <div className="paper-texture pointer-events-none absolute inset-0 opacity-50" />
       <div className="relative mx-auto max-w-5xl">
         <div className="flex items-center justify-center gap-2 font-sans text-sm text-ink/50">
@@ -290,7 +290,7 @@ export function LandingPage() {
   const { createSession, sessionLoading } = useSessionContext();
 
   return (
-    <div className="min-h-screen bg-paper">
+    <div className="min-h-screen overflow-x-hidden bg-paper">
       <div className="paper-texture pointer-events-none fixed inset-0 z-[-1] opacity-30" aria-hidden="true" />
 
       <header className="border-b border-line bg-paper/90 backdrop-blur-sm supports-[backdrop-filter]:bg-paper/70">
