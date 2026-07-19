@@ -186,7 +186,7 @@ function FieldRow({
                   onKeyDown={handleKeyDown}
                   placeholder={
                     field.confidence < 0.7
-                      ? "Needs your input \u2014 not found in document"
+                      ? "Needs your input - not found in document"
                       : "Edit value if needed"
                   }
                   className={`w-full rounded-sm border bg-paper px-3 py-1.5 font-sans text-sm text-ink placeholder:text-ink/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass ${
@@ -300,7 +300,7 @@ export function ProfilePage() {
       (f) => f.size > 0 && (f.name.endsWith(".pdf") || f.name.match(/\.(png|jpg|jpeg)$/i))
     );
     if (files.length === 0) {
-      setAnnouncement("We couldn\u2019t read that file \u2014 try a PDF or an image.");
+      setAnnouncement("We couldn't read that file - try a PDF or an image.");
       return;
     }
     files.forEach((f) => uploadDocument(f));
@@ -360,7 +360,7 @@ export function ProfilePage() {
       <p className="font-sans text-sm font-medium text-ink/70">
         {extractLoading ? "Uploading\u2026" : dragOver ? "Drop your documents here" : "Drop your documents here, or click to browse"}
       </p>
-      <p className="mt-1 font-sans text-2xs text-ink/40">PDF, PNG, or JPEG \u2014 up to 10 MB each</p>
+      <p className="mt-1 font-sans text-2xs text-ink/40">PDF, PNG, or JPEG - up to 10 MB each</p>
     </div>
   );
 
@@ -435,7 +435,7 @@ export function ProfilePage() {
                 <div className="shimmer-bar h-full w-3/4" />
               </div>
               <p className="mt-2 font-mono text-2xs text-ink/30">
-                Extracting fields &mdash; this may take a moment
+                Extracting fields - this may take a moment
               </p>
             </div>
           )}
@@ -472,8 +472,8 @@ export function ProfilePage() {
                   <div className="flex items-center gap-2 border border-review/30 bg-review/5 px-3 py-2 fade-slide-in">
                     <Eye className="h-4 w-4 shrink-0 text-review" aria-hidden="true" />
                     <p className="font-sans text-xs text-review">
-                      Needs your input &mdash; <span className="font-medium">{needsReviewFields.length} field{needsReviewFields.length > 1 ? "s" : ""}</span>{" "}
-                      we couldn&rsquo;t read confidently. Review them below.
+                      Needs your input - <span className="font-medium">{needsReviewFields.length} field{needsReviewFields.length > 1 ? "s" : ""}</span>{" "}
+                      we couldn't read confidently. Review them below.
                     </p>
                   </div>
                   <ul className="space-y-2" role="list">
