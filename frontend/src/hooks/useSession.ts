@@ -34,7 +34,6 @@ export function useSession() {
   }, [token]);
 
   const deleteSession = useCallback(async () => {
-    if (!token) return;
     await api.deleteSession(token);
     sessionStorage.removeItem(STORAGE_KEY);
     setToken(null);

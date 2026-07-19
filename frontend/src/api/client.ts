@@ -28,8 +28,10 @@ export const api = {
   getSessionProfile: (token: string) =>
     request<{ session_token: string; profile: Record<string, any> }>(`/session/profile?token=${encodeURIComponent(token)}`),
 
-  deleteSession: (token: string) =>
-    request<{ message: string }>(`/session/delete?token=${encodeURIComponent(token)}`, { method: "DELETE" }),
+  deleteSession: (token: string | null) => {
+    if (!token) return Promise.resolve({ message: "No session to delete" });
+    return request<{ message: string }>(`/session/delete?token=${encodeURIComponent(token)}`, { method: "DELETE" });
+  },
 
   getSessionLog: (token: string) =>
     request<{ session_token: string; consent_log: any[]; total_actions: number }>(`/session/${encodeURIComponent(token)}/log`),
